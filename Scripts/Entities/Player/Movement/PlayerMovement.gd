@@ -14,10 +14,12 @@ extends CharacterBody3D
 @export var staminaDrainRate := 25.0   
 @export var staminaRegenRate := 15.0   
 @export var staminaRegenDelay := 0.4   
-
+@export var gunOffset := Vector3(0.25, -0.25, -0.4)
+@export var followSpeed := 18.0
 
 @onready var playerCamera = $PlayerHead/PlayerCamera
 @onready var staminaBar = $PlayerUI/StaminaBar
+
 
 var accelerationRate = 0
 var pitch = 0.0
@@ -26,11 +28,14 @@ var stamina := maxStamina
 var staminaRegenTimer := 0.0
 var displayed_stamina := maxStamina
 var stamina_velocity := 0.0
+var camera_default_position: Vector3
+
 
 
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	camera_default_position = playerCamera.transform.origin
 	
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
@@ -46,9 +51,12 @@ func _physics_process(delta: float) -> void:
 	applyGravity(delta)
 	handleJump()
 	
-	if is_on_floor():
-		headbobTime += delta * velocity.length() * float(is_on_floor())
-		playerCamera.transform.origin = headbob(headbobTime)
+	if is_on_floor() and velocity.length():
+		headbobTime += delta * velocity.length()
+		playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
+	else:
+		playerCamera.transform.origin = camera_default_position
+
 	
 func handleMovement(delta):
 	var inputDirection := Vector2(
@@ -122,5 +130,8 @@ func headbob(headbobTime):
 	headbobPosition.x = sin(headbobTime * headbobFrequency / 2) * headbobAmplitude
 	return headbobPosition
 	
-
-	
+func get_camera_base_position() -> Vector3:
+	if not Input.is_action_pressed("aim"):
+		return playerCamera.global_position - headbob(headbobTime)
+	else:
+		return playerCamera.global_position

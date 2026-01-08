@@ -1,0 +1,80 @@
+[gd_scene load_steps=9 format=3 uid="uid://bsybk1mgogfkb"]
+
+[ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
+[ext_resource type="PackedScene" uid="uid://dc7sp1c0l5bqt" path="res://Scenes/Guns/BaseGun/base_gun.tscn" id="2_guygx"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2useb"]
+
+[sub_resource type="Gradient" id="Gradient_m5k1b"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6xa31"]
+gradient = SubResource("Gradient_m5k1b")
+fill_from = Vector2(1, 0)
+
+[sub_resource type="Gradient" id="Gradient_fkeof"]
+colors = PackedColorArray(2.9841065e-06, 0.68260616, 0.22085953, 1, 0, 0.68235296, 0.21960784, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_guygx"]
+gradient = SubResource("Gradient_fkeof")
+
+[node name="BasePlayer" type="Node3D"]
+
+[node name="PlayerBody" type="CharacterBody3D" parent="."]
+script = ExtResource("1_evp4c")
+movementSpeed = null
+defaultAccelerationRate = null
+mouseSensitivity = null
+gravityRate = null
+jumpForce = null
+accelerationRateInAir = null
+headbobFrequency = null
+headbobAmplitude = 0.02
+sprintMultiplier = null
+sprintAcceleration = null
+maxStamina = null
+staminaDrainRate = null
+staminaRegenRate = null
+staminaRegenDelay = null
+gunOffset = null
+followSpeed = null
+
+[node name="PlayerCollision" type="CollisionShape3D" parent="PlayerBody"]
+shape = SubResource("CapsuleShape3D_2useb")
+
+[node name="PlayerMesh" type="MeshInstance3D" parent="PlayerBody"]
+visible = false
+mesh = SubResource("CapsuleMesh_2useb")
+
+[node name="PlayerHead" type="Node3D" parent="PlayerBody"]
+
+[node name="PlayerCamera" type="Camera3D" parent="PlayerBody/PlayerHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+fov = 90.0
+
+[node name="PlayerUI" type="CanvasLayer" parent="PlayerBody"]
+
+[node name="StaminaBar" type="TextureProgressBar" parent="PlayerBody/PlayerUI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.999996
+offset_top = -93.0
+offset_right = 101.0
+offset_bottom = -29.0
+grow_vertical = 0
+scale = Vector2(8.465, 0.925)
+value = 100.0
+texture_under = SubResource("GradientTexture2D_6xa31")
+texture_progress = SubResource("GradientTexture2D_guygx")
+metadata/_edit_use_anchors_ = true
+
+[node name="BaseGun" parent="." node_paths=PackedStringArray("playerCamera", "player") instance=ExtResource("2_guygx")]
+transform = Transform3D(-1.172251e-07, 0, -1, 0, 1, 0, 1, 0, -1.172251e-07, 0.32683718, 0.67413336, -0.43197015)
+followSpeed = 42.0
+gunOffset = Vector3(0.25, -0.25, -0.4)
+adsOffset = Vector3(-0.2, 0.1, 0.15)
+adsSpeed = 8.0
+playerCamera = NodePath("../PlayerBody/PlayerHead/PlayerCamera")
+player = NodePath("../PlayerBody")

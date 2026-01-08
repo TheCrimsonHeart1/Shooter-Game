@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://dc7sp1c0l5bqt"]
+
+[ext_resource type="Script" uid="uid://cbaiqescdumgr" path="res://Scripts/Guns/PlaceHolder/base_gun.gd" id="1_egibc"]
+[ext_resource type="PackedScene" uid="uid://unknf4u1dotx" path="res://Models/Placeholder/Guns/low_poly_gun.glb" id="1_wf4u4"]
+[ext_resource type="AudioStream" uid="uid://dvssvjefxpb2l" path="res://Audio/Guns/ak-47-firing-8760-[AudioTrimmer.com] (1).mp3" id="3_ynewt"]
+
+[node name="BaseGun" type="Node3D"]
+script = ExtResource("1_egibc")
+
+[node name="AK47 Placeholder" parent="." instance=ExtResource("1_wf4u4")]
+transform = Transform3D(-1.0927848e-09, 0, -0.025, 0, 0.025, 0, 0.025, 0, -1.0927848e-09, 0, 0, 0)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05568859, 0.0536118, -0.40768188)
+stream = ExtResource("3_ynewt")
