@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://ddl2gnobsrxta"]
+[gd_scene load_steps=7 format=3 uid="uid://ddl2gnobsrxta"]
 
-[ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://root/Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
+[ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="1_a4krk"]
+[ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7gvvr"]
 
@@ -17,6 +18,8 @@ sky = SubResource("Sky_7gvvr")
 
 [node name="CSGMesh3D" type="CSGMesh3D" parent="."]
 transform = Transform3D(9.929591, 0, 0, 0, 0.23713659, 0, 0, 0, 9.929591, 0, 0, 0)
+material_override = ExtResource("1_a4krk")
+use_collision = true
 mesh = SubResource("BoxMesh_7gvvr")
 
 [node name="BasePlayer" parent="." instance=ExtResource("1_txh0p")]

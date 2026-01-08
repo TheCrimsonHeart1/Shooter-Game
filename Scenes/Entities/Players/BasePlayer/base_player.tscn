@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bsybk1mgogfkb"]
 
-[ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://root/Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
+[ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
 
@@ -14,8 +14,10 @@ script = ExtResource("1_evp4c")
 [node name="PlayerCollision" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_2useb")
 
-[node name="PlayerCamera" type="Camera3D" parent="PlayerBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-
 [node name="PlayerMesh" type="MeshInstance3D" parent="PlayerBody"]
 mesh = SubResource("CapsuleMesh_2useb")
+
+[node name="PlayerHead" type="Node3D" parent="PlayerBody"]
+
+[node name="PlayerCamera" type="Camera3D" parent="PlayerBody/PlayerHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
