@@ -12,6 +12,8 @@ extends Node3D
 @export var fireRate := 0.1  
 @export var shakeIntensity := 0  
 @export var shakeDuration := 0   
+@onready var muzzleFlash: GPUParticles3D = $"AK47 Placeholder/GPUParticles3D"
+
 
 var isAiming = false
 var current_offset: Vector3
@@ -54,8 +56,14 @@ func handleGun(delta):
 	
 	if Input.is_action_pressed("shoot") and fireTimer <= 0.0:
 		$AudioStreamPlayer3D.play()
+
+		if muzzleFlash:
+			muzzleFlash.restart()
+			muzzleFlash.emitting = true
+
 		recoilOffset.x += randf_range(recoilPitch * 0.7, recoilPitch)
 		recoilOffset.y += randf_range(-recoilYaw, recoilYaw)
+
 		fireTimer = fireRate
 		triggerScreenShake()
 
@@ -71,3 +79,4 @@ func applyScreenShake():
 		randf_range(-shakeIntensity, shakeIntensity),
 		0.0 
 	)
+	

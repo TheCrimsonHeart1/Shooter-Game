@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://b2klvo674q0n4"]
+
+[ext_resource type="Texture2D" uid="uid://cvpjacuetdxdb" path="res://Effects/MuzzleFlash/unnamed_project_transform2_7.png" id="1_qffc1"]
+
+[resource]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+albedo_texture = ExtResource("1_qffc1")

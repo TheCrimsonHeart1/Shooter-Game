@@ -23,6 +23,7 @@ gradient = SubResource("Gradient_fkeof")
 
 [node name="PlayerBody" type="CharacterBody3D" parent="."]
 script = ExtResource("1_evp4c")
+headbobAmplitude = 0.02
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_2useb")
