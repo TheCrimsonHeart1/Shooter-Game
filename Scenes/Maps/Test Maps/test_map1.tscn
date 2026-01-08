@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://ddl2gnobsrxta"]
+
+[ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://root/Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7gvvr"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_txh0p"]
+
+[sub_resource type="Sky" id="Sky_7gvvr"]
+sky_material = SubResource("ProceduralSkyMaterial_txh0p")
+
+[sub_resource type="Environment" id="Environment_41slu"]
+background_mode = 2
+sky = SubResource("Sky_7gvvr")
+
+[node name="TestMap" type="Node3D"]
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+transform = Transform3D(9.929591, 0, 0, 0, 0.23713659, 0, 0, 0, 9.929591, 0, 0, 0)
+mesh = SubResource("BoxMesh_7gvvr")
+
+[node name="BasePlayer" parent="." instance=ExtResource("1_txh0p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_41slu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 7, 0)
