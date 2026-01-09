@@ -44,16 +44,30 @@ fov = 90.0
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 36.999996
-offset_top = -93.0
-offset_right = 101.0
-offset_bottom = -29.0
+offset_left = 19.0
+offset_top = -52.0
+offset_right = 83.0
+offset_bottom = 12.0
 grow_vertical = 0
-scale = Vector2(8.465, 0.925)
+scale = Vector2(7.295, 0.58)
 value = 100.0
 texture_under = SubResource("GradientTexture2D_6xa31")
 texture_progress = SubResource("GradientTexture2D_guygx")
 metadata/_edit_use_anchors_ = true
+
+[node name="AmmoLabel" type="Label" parent="PlayerBody/PlayerUI"]
+anchors_preset = -1
+anchor_left = 0.84
+anchor_top = 0.89
+anchor_right = 0.84
+anchor_bottom = 0.89
+offset_left = 156.20007
+offset_top = 54.799988
+offset_right = 221.20007
+offset_bottom = 85.79999
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(2, 2)
 
 [node name="BaseGun" parent="." node_paths=PackedStringArray("playerCamera", "player") instance=ExtResource("2_guygx")]
 transform = Transform3D(-1.172251e-07, 0, -1, 0, 1, 0, 1, 0, -1.172251e-07, 0.32683718, 0.67413336, -0.43197015)

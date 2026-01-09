@@ -16,11 +16,11 @@ extends CharacterBody3D
 @export var staminaRegenRate: float = 15.0
 @export var staminaRegenDelay: float = 0.4
 
-# --- Node References ---
+
 @onready var playerCamera: Camera3D = $PlayerHead/PlayerCamera
 @onready var staminaBar: TextureProgressBar = $PlayerUI/StaminaBar
+@onready var ammoLabel: Label = $PlayerUI/AmmoLabel
 
-# --- Variables ---
 var accelerationRate: float = 0
 var pitch: float = 0.0
 var headbobTime: float = 0.0
@@ -31,46 +31,31 @@ var stamina_velocity: float = 0.0
 var camera_default_position: Vector3
 var mouse_locked: bool = true
 
-# --- Ready ---
 func _ready() -> void:
 	stamina = maxStamina
 	displayed_stamina = maxStamina
 	camera_default_position = playerCamera.transform.origin
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-	# Only capture mouse for local player
-	if is_multiplayer_authority():
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-# --- Input ---
 func _input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
-		return  # Only local player handles input
-	
 	if event is InputEventMouseMotion:
 		rotate_y(deg_to_rad(-event.relative.x * mouseSensitivity))
 		pitch -= event.relative.y * mouseSensitivity
 		pitch = clamp(pitch, -89.0, 89.0)
 		playerCamera.rotation.x = deg_to_rad(pitch)
 
-# --- Physics ---
 func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority():
-		handleMovement(delta)
-		applyGravity(delta)
-		handleJump()
-		
-		# Headbob locally
-		if is_on_floor() and velocity.length() > 0:
-			headbobTime += delta * velocity.length()
-			playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
-		else:
-			playerCamera.transform.origin = camera_default_position
-		
-		# Only send transform if connected
-		if multiplayer.multiplayer_peer != null:
-			rpc_id(0, "sync_transform", global_position, global_rotation)
+	handleMovement(delta)
+	applyGravity(delta)
+	handleJump()
+	
+	if is_on_floor() and velocity.length() > 0:
+		headbobTime += delta * velocity.length()
+		playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
+	else:
+		playerCamera.transform.origin = camera_default_position
 
-# --- Movement ---
 func handleMovement(delta: float) -> void:
 	var inputDirection: Vector2 = Vector2(
 		Input.get_action_strength("right") - Input.get_action_strength("left"),
@@ -86,13 +71,12 @@ func handleMovement(delta: float) -> void:
 		accelerationRate = sprintAcceleration
 	else:
 		accelerationRate = defaultAccelerationRate
-	
+
 	var targetVelocity: Vector3 = direction * currentSpeed
 	velocity.x = lerp(velocity.x, targetVelocity.x, accelerationRate * delta)
 	velocity.z = lerp(velocity.z, targetVelocity.z, accelerationRate * delta)
 	move_and_slide()
-	
-	# Stamina
+
 	if isSprinting:
 		stamina -= staminaDrainRate * delta
 		stamina = max(stamina, 0.0)
@@ -104,12 +88,10 @@ func handleMovement(delta: float) -> void:
 			stamina += staminaRegenRate * delta
 			stamina = min(stamina, maxStamina)
 
-# --- Process ---
 func _process(delta: float) -> void:
-	if is_multiplayer_authority() and Input.is_action_just_pressed("ui_cancel"):
+	if Input.is_action_just_pressed("ui_cancel"):
 		toggle_mouse_lock()
-	
-	# Smooth stamina bar locally
+
 	var stiffness: float = 35.0
 	var damping: float = 14.0
 	var force: float = (stamina - displayed_stamina) * stiffness
@@ -118,7 +100,6 @@ func _process(delta: float) -> void:
 	displayed_stamina += stamina_velocity * delta
 	staminaBar.value = displayed_stamina
 
-# --- Gravity & Jump ---
 func applyGravity(delta: float) -> void:
 	if not is_on_floor():
 		accelerationRate = accelerationRateInAir
@@ -131,14 +112,12 @@ func handleJump() -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jumpForce
 
-# --- Headbob ---
 func headbob(headbobTime: float) -> Vector3:
 	var headbobPosition: Vector3 = Vector3.ZERO
 	headbobPosition.y = sin(headbobTime * headbobFrequency) * headbobAmplitude
 	headbobPosition.x = sin(headbobTime * headbobFrequency / 2) * headbobAmplitude
 	return headbobPosition
 
-# --- Camera ---
 func toggle_mouse_lock() -> void:
 	mouse_locked = not mouse_locked
 	if mouse_locked:
@@ -150,10 +129,4 @@ func get_camera_base_position() -> Vector3:
 	if not Input.is_action_pressed("aim"):
 		return playerCamera.global_position - headbob(headbobTime)
 	return playerCamera.global_position
-
-# --- Multiplayer sync ---
-@rpc("any_peer", "unreliable")
-func sync_transform(pos: Vector3, rot: Vector3) -> void:
-	if not is_multiplayer_authority():
-		global_position = pos
-		global_rotation = rot
+	
