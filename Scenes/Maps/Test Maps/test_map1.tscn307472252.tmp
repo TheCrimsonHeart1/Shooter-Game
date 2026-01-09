@@ -1,8 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://ddl2gnobsrxta"]
+[gd_scene load_steps=10 format=3 uid="uid://ddl2gnobsrxta"]
 
 [ext_resource type="Script" uid="uid://dbww7sdk5xr6v" path="res://Scenes/Maps/Test Maps/multiplayertest.gd" id="1_5v4k3"]
 [ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="1_a4krk"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
+[ext_resource type="Script" uid="uid://cmcd5jqxv8no6" path="res://Scenes/Maps/Test Maps/Host.gd" id="4_m1chm"]
+[ext_resource type="Script" uid="uid://b4apkudn0uk4u" path="res://Scenes/Maps/Test Maps/join.gd" id="5_ggkai"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7gvvr"]
 
@@ -45,6 +47,7 @@ adjustment_saturation = 1.14
 
 [node name="MultiplayerManager" type="Node3D"]
 script = ExtResource("1_5v4k3")
+player_scene = ExtResource("1_txh0p")
 
 [node name="CSGMesh3D" type="CSGMesh3D" parent="."]
 transform = Transform3D(9.93, 0, 0, 0, 0.237, 0, 0, 0, 15, 0, 0, 0)
@@ -67,3 +70,32 @@ shadow_blur = 0.58
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6755633, 0.97674656, -2.4645534)
 use_collision = true
 size = Vector3(3.866516, 1.8764648, 1)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Button" type="Button" parent="CanvasLayer"]
+offset_right = 269.0
+offset_bottom = 52.0
+text = "Host"
+script = ExtResource("4_m1chm")
+
+[node name="Button2" type="Button" parent="CanvasLayer"]
+offset_left = 321.0
+offset_right = 590.0
+offset_bottom = 52.0
+text = "Join
+"
+script = ExtResource("5_ggkai")
+
+[node name="IPField" type="LineEdit" parent="CanvasLayer/Button2"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 168.5
+offset_right = 450.23303
+offset_bottom = 31.0
+grow_horizontal = 2
+scale = Vector2(1, 1.0177156)
+size_flags_horizontal = 0
+placeholder_text = "Enter IP..."
