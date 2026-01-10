@@ -1,10 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://bsybk1mgogfkb"]
+[gd_scene load_steps=15 format=3 uid="uid://bsybk1mgogfkb"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
 [ext_resource type="Texture2D" uid="uid://cp666d11xkuj6" path="res://Texures/Placeholder/Guns/crosshair097.png" id="2_2utkx"]
 [ext_resource type="PackedScene" uid="uid://dc7sp1c0l5bqt" path="res://Scenes/Guns/BaseGun/base_gun.tscn" id="2_guygx"]
 [ext_resource type="PackedScene" uid="uid://b3cvp3osl62qa" path="res://Scenes/Guns/Revolver/revolver.tscn" id="3_4ofay"]
 [ext_resource type="Shader" uid="uid://cks2u821xm8kc" path="res://Scenes/Entities/Players/BasePlayer/base_player.gdshader" id="3_n4e0b"]
+[ext_resource type="PackedScene" uid="uid://6mxyhmbovc6q" path="res://UI/Main Menu/pause_menu.tscn" id="6_4ofay"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
 
@@ -30,11 +31,13 @@ gradient = SubResource("Gradient_fkeof")
 
 [node name="BasePlayer" type="Node3D"]
 
-[node name="PlayerBody" type="CharacterBody3D" parent="."]
+[node name="PlayerBody" type="CharacterBody3D" parent="." node_paths=PackedStringArray("currencylabel")]
+floor_snap_length = 0.32
 script = ExtResource("1_evp4c")
 headbobAmplitude = 0.05
 ak47 = ExtResource("2_guygx")
 revolver = ExtResource("3_4ofay")
+currencylabel = NodePath("PlayerUI/CurrencyLabel")
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_2useb")
@@ -86,6 +89,21 @@ grow_horizontal = 0
 grow_vertical = 0
 scale = Vector2(2, 2)
 
+[node name="CurrencyLabel" type="Label" parent="PlayerBody/PlayerUI"]
+anchors_preset = -1
+anchor_left = 0.84
+anchor_top = 0.89
+anchor_right = 0.84
+anchor_bottom = 0.89
+offset_left = 163.20007
+offset_top = -47.200012
+offset_right = 228.20007
+offset_bottom = -16.200012
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(2, 2)
+horizontal_alignment = 1
+
 [node name="Reticle" type="TextureRect" parent="PlayerBody/PlayerUI"]
 anchors_preset = 8
 anchor_left = 0.5
@@ -101,3 +119,6 @@ grow_vertical = 2
 scale = Vector2(0.52, 0.52)
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("2_2utkx")
+
+[node name="PauseMenu" parent="PlayerBody" instance=ExtResource("6_4ofay")]
+visible = false

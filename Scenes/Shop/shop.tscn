@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3 uid="uid://gkahjn6hgfgn"]
+
+[ext_resource type="Script" uid="uid://dvwclsnd4hxav" path="res://Scripts/Shop/shop.gd" id="1_78vcx"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_cpowt"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_78vcx"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cpowt"]
+radius = 1.553903
+
+[node name="Shop" type="Node3D" node_paths=PackedStringArray("shop_ui")]
+script = ExtResource("1_78vcx")
+shop_ui = NodePath("ShopUI")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("CapsuleMesh_cpowt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CapsuleShape3D_78vcx")
+
+[node name="Label3D" type="Label3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2242393, 0)
+text = "Shop"
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_cpowt")
+
+[node name="ShopUI" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="ShopUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button3" type="Button" parent="ShopUI/Panel"]
+layout_mode = 1
+offset_right = 81.0
+offset_bottom = 31.0
+text = "Buy AK47"
+
+[node name="Button4" type="Button" parent="ShopUI/Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+offset_right = 81.0
+grow_vertical = 0
+text = "Refill Ammo"
+
+[node name="Button2" type="Button" parent="ShopUI/Panel"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -38.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Exit
+"
+
+[connection signal="pressed" from="ShopUI/Panel/Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="ShopUI/Panel/Button4" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="ShopUI/Panel/Button2" to="." method="_on_button_2_pressed"]

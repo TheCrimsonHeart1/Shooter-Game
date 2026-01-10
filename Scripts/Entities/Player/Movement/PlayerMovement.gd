@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 # --- Player Config ---
+var current_currency = 0
 @export var movementSpeed: float = 4
 @export var defaultAccelerationRate: float = 7
 @export var mouseSensitivity: float = 0.15
@@ -18,11 +19,16 @@ extends CharacterBody3D
 @export var revolver : PackedScene
 @export var recoilSpeedUp: float = 10.0     # how fast the camera moves up when shooting
 @export var recoilRecoverySpeed: float = 5.0  # how fast the camera returns to normal
-
+@export var currencylabel = Label
 var cameraRecoilTarget: float = 0.0  # target recoil from shooting
 @export var staminaRegenDelay: float = 0.4
 var current_weapon : int = 0
+var hasak47 = false
 
+var gunAmmo := {
+	0: {"magazine": 30, "ammo": 120},  # AK47
+	1: {"magazine": 6,  "ammo": 36}    # Revolver
+}
 
 
 @onready var playerCamera: Camera3D = $PlayerHead/PlayerCamera
@@ -40,6 +46,7 @@ var camera_default_position: Vector3
 var mouse_locked: bool = true
 var cameraBaseRotation := Vector2.ZERO  # x = pitch, y = yaw
 var basePitch: float = 0.0  # Player-controlled pitch without recoil
+var isinshop = false
 
 func _ready() -> void:
 	stamina = maxStamina
@@ -53,6 +60,11 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if isinshop:
+		return
+	if $PauseMenu.visible:
+		return
+	
 	if event is InputEventMouseMotion:
 		# Horizontal rotation (player-controlled)
 		rotate_y(deg_to_rad(-event.relative.x * mouseSensitivity))
@@ -63,13 +75,25 @@ func _input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if isinshop:
+		$PlayerUI.visible = false
+		return
+	else:
+		$PlayerUI.visible = true
+	if $PauseMenu.visible:
+		$PlayerUI.visible = false
+		return
+	else:
+		$PlayerUI.visible = true
 	handleMovement(delta)
 	applyGravity(delta)
 	handleJump()
-	if Input.is_action_just_pressed("switch") and current_weapon != 1:
-		switch_gun(1)
-	elif Input.is_action_just_pressed("switch") and current_weapon != 0:
-		switch_gun(0)
+	if Input.is_action_just_pressed("switch"):
+		if current_weapon == 1 and hasak47:
+			switch_gun(0) # Revolver → AK (only if unlocked)
+		elif current_weapon == 0:
+			switch_gun(1) # AK → Revolver (always allowed)
+
 	if is_on_floor() and velocity.length() > 0:
 		headbobTime += delta * velocity.length()
 		playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
@@ -109,6 +133,18 @@ func handleMovement(delta: float) -> void:
 			stamina = min(stamina, maxStamina)
 
 func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("pause"):
+		if isinshop:
+			return
+
+		var pause_menu = $PauseMenu
+		pause_menu.visible = not pause_menu.visible
+
+		if pause_menu.visible:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 	# Smoothly approach the target recoil (slower upward movement)
 	cameraRecoil.x = lerp(cameraRecoil.x, cameraRecoilTarget, recoilSpeedUp * delta)
 
@@ -171,10 +207,17 @@ var current_weapon_instance: Node3D = null
 func switch_gun(index: int):
 	if current_weapon == index:
 		return
+
+	# Save current gun ammo
 	if current_weapon_instance != null:
+		if current_weapon in gunAmmo:
+			gunAmmo[current_weapon]["magazine"] = current_weapon_instance.currentMagazine
+			gunAmmo[current_weapon]["ammo"] = current_weapon_instance.currentAmmo
 		current_weapon_instance.queue_free()
 		current_weapon_instance = null
-	if index == 0:
+
+	# Instantiate new weapon
+	if index == 0 and hasak47 == true:
 		current_weapon_instance = ak47.instantiate()
 	elif index == 1:
 		current_weapon_instance = revolver.instantiate()
@@ -184,14 +227,25 @@ func switch_gun(index: int):
 	add_child(current_weapon_instance)
 	current_weapon = index
 
-	# Assign references explicitly
+	# Assign references
 	current_weapon_instance.player = self
 	current_weapon_instance.playerCamera = playerCamera
 	current_weapon_instance.reticle = $PlayerUI/Reticle
 	current_weapon_instance.ammoLabel = $PlayerUI/AmmoLabel
+
+	# Load ammo for this gun
+	if index in gunAmmo:
+		current_weapon_instance.currentMagazine = gunAmmo[index]["magazine"]
+		current_weapon_instance.currentAmmo = gunAmmo[index]["ammo"]
+		current_weapon_instance.update_ammo_ui()
+
 	
 var cameraRecoil := Vector2.ZERO
 
 func apply_camera_recoil(pitch_amount: float, yaw_amount: float) -> void:
 	cameraRecoilTarget += pitch_amount
 	# horizontal recoil is ignored
+
+func update_currency(amount):
+	current_currency += amount
+	currencylabel.text = str(current_currency)

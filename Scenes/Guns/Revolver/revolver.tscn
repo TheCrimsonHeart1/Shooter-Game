@@ -32,8 +32,9 @@ alpha_curve = SubResource("CurveTexture_ww4dy")
 
 [node name="Revolver" type="Node3D"]
 script = ExtResource("1_mbkny")
-recoilamount = -3.0
+recoilamount = -5.0
 gunOffset = Vector3(0.25, -0.25, -0.5)
+adsOffset = Vector3(-0.25, 0.1, 0.15)
 headbobAmplitude = Vector3(0.001, 0.01, 0)
 recoilPitch = 20.0
 recoilYaw = 4.0

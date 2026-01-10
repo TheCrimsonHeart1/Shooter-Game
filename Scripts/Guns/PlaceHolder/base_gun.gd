@@ -103,13 +103,24 @@ func handle_sway(delta):
 	targetSwayRotation = targetSwayRotation.lerp(Vector3.ZERO, swaySmooth * delta)
 
 func handle_gun(delta):
+	if player.isinshop:
+		return
 	if not playerCamera:
 		return
+	if player.get_node("PauseMenu").visible == true:
+		return
+		
 
 	isAiming = Input.is_action_pressed("aim")
 	var targetOffset = gunOffset + (adsOffset if isAiming else Vector3.ZERO)
 	currentOffset = currentOffset.lerp(targetOffset, adsSpeed * delta)
 	recoilOffset = recoilOffset.lerp(Vector3.ZERO, recoilRecoverySpeed * delta)
+
+	# --- FOV Smooth ---
+	var targetFOV = 90.0
+	if isAiming:
+		targetFOV = 60.0
+	playerCamera.fov = lerp(playerCamera.fov, targetFOV, 10 * delta)
 
 	# Compute final position in front of camera
 	var offset_global = playerCamera.global_transform.basis * (currentOffset + swayOffset)
@@ -126,7 +137,12 @@ func handle_gun(delta):
 
 	# Look in the final forward direction
 	look_at(global_position + forward, camera_up)
+	
 func shoot():
+	if player.isinshop:
+		return
+	if player.get_node("PauseMenu").visible == true:
+		return
 	if currentMagazine <= 0:
 		start_reload()
 		return

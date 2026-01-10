@@ -5,6 +5,8 @@ extends Node3D
 @export var enemy_scene: PackedScene
 @export var bone_rot_scene: PackedScene
 @export var spawn_points: Array[Node3D] = []
+@export var wave_label: Label  # drag your WaveLabel here
+
 
 var current_wave: int = 0
 var current_enemies: int = 0
@@ -30,6 +32,14 @@ func start_next_wave():
 	current_wave += 1
 	var num_to_spawn = enemies_per_wave + (current_wave - 1) * 2
 
+	# Show wave text on screen
+	if wave_label != null:
+		wave_label.text = "Wave %d" % current_wave
+		wave_label.visible = true
+		# Hide after 2 seconds
+		await get_tree().create_timer(2.0).timeout
+		wave_label.visible = false
+
 	print("Wave %d: Spawning %d enemies" % [current_wave, num_to_spawn])
 
 	current_enemies = 0
@@ -37,6 +47,7 @@ func start_next_wave():
 
 	for i in range(num_to_spawn):
 		spawn_enemy()
+
 
 func spawn_enemy():
 	if enemy_scene == null:
@@ -81,6 +92,7 @@ func spawn_enemy():
 
 func enemy_killed():
 	current_enemies -= 1
+	playerbody.update_currency(1)
 	if current_enemies <= 0:
 		# Wave complete
 		wave_in_progress = false
