@@ -1,10 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://ddl2gnobsrxta"]
+[gd_scene load_steps=13 format=3 uid="uid://ddl2gnobsrxta"]
 
 [ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="1_a4krk"]
 [ext_resource type="Script" uid="uid://ckkdwopyhoc1e" path="res://Scripts/Director/director.gd" id="1_m1chm"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
 [ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_5v4k3"]
-[ext_resource type="PackedScene" uid="uid://dpl7x6t26tm0t" path="res://Scenes/Entities/Enemies/Rot/bone_rot.tscn" id="3_w2jat"]
 [ext_resource type="PackedScene" uid="uid://c763kk01mqd33" path="res://Scenes/Entities/Enemies/Rot/rot.tscn" id="4_m1chm"]
 [ext_resource type="PackedScene" uid="uid://chat8tgedk7ji" path="res://Scenes/Entities/Enemies/Rot/enemy_spawn_point.tscn" id="6_1lnse"]
 
@@ -58,7 +57,6 @@ geometry_parsed_geometry_type = 1
 script = ExtResource("1_m1chm")
 playerbody = NodePath("BasePlayer/PlayerBody")
 enemy_scene = ExtResource("4_m1chm")
-bone_rot_scene = ExtResource("3_w2jat")
 spawn_points = [NodePath("EnemySpawnPoint"), NodePath("EnemySpawnPoint2"), NodePath("EnemySpawnPoint3")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]

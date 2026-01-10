@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dc7sp1c0l5bqt"]
+[gd_scene load_steps=13 format=3 uid="uid://dc7sp1c0l5bqt"]
 
 [ext_resource type="Script" uid="uid://cbaiqescdumgr" path="res://Scripts/Guns/PlaceHolder/base_gun.gd" id="1_egibc"]
 [ext_resource type="PackedScene" uid="uid://unknf4u1dotx" path="res://Models/Placeholder/Guns/low_poly_gun.glb" id="1_wf4u4"]
@@ -6,6 +6,7 @@
 [ext_resource type="AudioStream" uid="uid://dvssvjefxpb2l" path="res://Audio/Guns/ak-47-firing-8760-[AudioTrimmer.com] (1).mp3" id="3_ynewt"]
 [ext_resource type="Material" uid="uid://b2klvo674q0n4" path="res://Effects/MuzzleFlash/base_gun.tres" id="4_eppjt"]
 [ext_resource type="ArrayMesh" uid="uid://cbpf808iw8iyo" path="res://Effects/MuzzleFlash/Flash.obj" id="5_eppjt"]
+[ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="7_yrst7"]
 
 [sub_resource type="Curve" id="Curve_eppjt"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.2046126, 0.0, 0, 0]
@@ -56,3 +57,6 @@ draw_pass_1 = ExtResource("5_eppjt")
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="AK47 Placeholder"]
 transform = Transform3D(-1.7484555e-06, 0, 40, 0, 40, 0, -40, 0, -1.7484555e-06, -16.307276, 2.1444721, 2.2275443)
 stream = ExtResource("3_ynewt")
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="AK47 Placeholder"]
+stream = ExtResource("7_yrst7")

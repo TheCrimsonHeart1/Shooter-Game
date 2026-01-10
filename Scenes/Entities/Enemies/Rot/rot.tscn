@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://c763kk01mqd33"]
+
+[ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_icaku"]
+[ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_5uorb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_icaku"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_icaku"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5uorb"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" groups=["enemy"]]
+script = ExtResource("1_icaku")
+speed = 3
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_icaku")
+mesh = SubResource("CapsuleMesh_icaku")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_5uorb")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+avoidance_enabled = true
+radius = 0.6
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_5uorb")

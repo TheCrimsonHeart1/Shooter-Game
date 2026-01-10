@@ -1,0 +1,97 @@
+[gd_scene load_steps=10 format=3 uid="uid://ddl2gnobsrxta"]
+
+[ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
+[ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_5v4k3"]
+[ext_resource type="PackedScene" uid="uid://c763kk01mqd33" path="res://Scenes/Entities/Enemies/Rot/rot.tscn" id="4_m1chm"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_m1chm"]
+panorama = ExtResource("2_5v4k3")
+
+[sub_resource type="Sky" id="Sky_ggkai"]
+sky_material = SubResource("PanoramaSkyMaterial_m1chm")
+
+[sub_resource type="Environment" id="Environment_41slu"]
+background_mode = 2
+sky = SubResource("Sky_ggkai")
+ambient_light_source = 3
+ambient_light_energy = 1.6
+reflected_light_source = 2
+ssr_enabled = true
+ssao_enabled = true
+ssao_radius = 1.73
+ssao_intensity = 2.91
+ssao_detail = 0.65
+ssao_horizon = 0.11
+ssil_enabled = true
+ssil_intensity = 1.71
+sdfgi_enabled = true
+sdfgi_energy = 1.18
+glow_enabled = true
+glow_normalized = true
+glow_bloom = 0.5
+glow_hdr_threshold = 1.42
+glow_hdr_scale = 2.05
+glow_hdr_luminance_cap = 2.75
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0112
+volumetric_fog_albedo = Color(0.7666196, 0.76661956, 0.76661956, 1)
+volumetric_fog_emission_energy = 24.8
+adjustment_enabled = true
+adjustment_brightness = 0.72
+adjustment_contrast = 1.14
+adjustment_saturation = 0.86
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_5v4k3"]
+vertices = PackedVector3Array(-7.525914, 0.45000002, -1.7701769, -2.7759142, 0.45000002, -1.5201769, -2.5259142, 0.45000002, -3.270177, 1.2240858, 0.45000002, -3.270177, 1.4740858, 0.45000002, -8.020177, -7.525914, 0.45000002, -8.020177, 2.9740858, 0.45000002, -3.020177, 2.9740858, 0.45000002, 0.9798231, 7.474086, 0.45000002, 0.9798231, 7.474086, 0.45000002, -8.020177, -1.7759142, 4.45, -2.270177, -1.7759142, 4.45, 2.229823, 1.9740858, 4.45, 2.229823, 1.9740858, 4.45, -2.270177, -1.5259142, 0.45000002, -2.020177, -1.5259142, 0.45000002, 1.9798231, 1.7240858, 0.45000002, 1.9798231, 1.7240858, 0.45000002, -2.020177, -1.2759142, 0.45000002, 7.979823, -1.0259142, 0.45000002, 3.229823, -2.7759142, 0.45000002, 2.979823, -7.525914, 0.45000002, 7.979823, 2.7240858, 0.45000002, 3.229823, 7.474086, 0.45000002, 7.979823)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(4, 3, 2), PackedInt32Array(0, 5, 2), PackedInt32Array(2, 5, 4), PackedInt32Array(6, 3, 4), PackedInt32Array(8, 7, 6), PackedInt32Array(4, 9, 6), PackedInt32Array(6, 9, 8), PackedInt32Array(13, 12, 10), PackedInt32Array(10, 12, 11), PackedInt32Array(17, 16, 14), PackedInt32Array(14, 16, 15), PackedInt32Array(20, 19, 18), PackedInt32Array(0, 1, 20), PackedInt32Array(18, 21, 20), PackedInt32Array(20, 21, 0), PackedInt32Array(22, 7, 8), PackedInt32Array(18, 19, 22), PackedInt32Array(8, 23, 22), PackedInt32Array(22, 23, 18)]
+geometry_parsed_geometry_type = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_5v4k3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_m1chm"]
+
+[node name="MultiplayerManager" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_41slu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(0.47679272, 0.03428252, -0.878347, 0.45757928, -0.86285657, 0.21470976, -0.75052667, -0.5042854, -0.42709053, 0, 7, 0)
+shadow_enabled = true
+shadow_blur = 0.58
+
+[node name="BasePlayer" parent="." instance=ExtResource("1_txh0p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.839859, 1, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_5v4k3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(2.2608209, 0, 0, 0, 1, 0, 0, 0, 2.9583945, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D"]
+transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
+mesh = SubResource("BoxMesh_5v4k3")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D"]
+transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
+shape = SubResource("BoxShape3D_m1chm")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="NavigationRegion3D"]
+transform = Transform3D(0.6302746, 0, 0, 0, 40.12164, 0, 0, 0, 0.9468797, 0, 1.9980645, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D2"]
+transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
+mesh = SubResource("BoxMesh_5v4k3")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D2"]
+transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
+shape = SubResource("BoxShape3D_m1chm")
+
+[node name="CharacterBody3D" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_m1chm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2204556, 5.6170235, 0)
+player = NodePath("../BasePlayer/PlayerBody")
+
+[editable path="BasePlayer"]
