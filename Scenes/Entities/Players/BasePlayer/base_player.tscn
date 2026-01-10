@@ -1,11 +1,20 @@
-[gd_scene load_steps=9 format=3 uid="uid://bsybk1mgogfkb"]
+[gd_scene load_steps=14 format=3 uid="uid://bsybk1mgogfkb"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
+[ext_resource type="Texture2D" uid="uid://cp666d11xkuj6" path="res://Texures/Placeholder/Guns/crosshair097.png" id="2_2utkx"]
 [ext_resource type="PackedScene" uid="uid://dc7sp1c0l5bqt" path="res://Scenes/Guns/BaseGun/base_gun.tscn" id="2_guygx"]
+[ext_resource type="PackedScene" uid="uid://b3cvp3osl62qa" path="res://Scenes/Guns/Revolver/revolver.tscn" id="3_4ofay"]
+[ext_resource type="Shader" uid="uid://cks2u821xm8kc" path="res://Scenes/Entities/Players/BasePlayer/base_player.gdshader" id="3_n4e0b"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_2useb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n4e0b"]
+render_priority = 0
+shader = ExtResource("3_n4e0b")
+
+[sub_resource type="QuadMesh" id="QuadMesh_2utkx"]
 
 [sub_resource type="Gradient" id="Gradient_m5k1b"]
 
@@ -23,7 +32,9 @@ gradient = SubResource("Gradient_fkeof")
 
 [node name="PlayerBody" type="CharacterBody3D" parent="."]
 script = ExtResource("1_evp4c")
-headbobAmplitude = 0.02
+headbobAmplitude = 0.05
+ak47 = ExtResource("2_guygx")
+revolver = ExtResource("3_4ofay")
 
 [node name="PlayerCollision" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_2useb")
@@ -37,6 +48,12 @@ mesh = SubResource("CapsuleMesh_2useb")
 [node name="PlayerCamera" type="Camera3D" parent="PlayerBody/PlayerHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 fov = 90.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody/PlayerHead/PlayerCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25378323)
+visible = false
+material_override = SubResource("ShaderMaterial_n4e0b")
+mesh = SubResource("QuadMesh_2utkx")
 
 [node name="PlayerUI" type="CanvasLayer" parent="PlayerBody"]
 
@@ -69,7 +86,18 @@ grow_horizontal = 0
 grow_vertical = 0
 scale = Vector2(2, 2)
 
-[node name="BaseGun" parent="." node_paths=PackedStringArray("playerCamera", "player") instance=ExtResource("2_guygx")]
-transform = Transform3D(-1.172251e-07, 0, -1, 0, 1, 0, 1, 0, -1.172251e-07, 0.32683718, 0.67413336, -0.43197015)
-playerCamera = NodePath("../PlayerBody/PlayerHead/PlayerCamera")
-player = NodePath("../PlayerBody")
+[node name="Reticle" type="TextureRect" parent="PlayerBody/PlayerUI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.52, 0.52)
+pivot_offset = Vector2(32, 32)
+texture = ExtResource("2_2utkx")

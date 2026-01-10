@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdy4igfpisxoa"]
+
+[ext_resource type="Texture2D" uid="uid://bgk34yan5falt" path="res://Texures/Placeholder/Guns/bullet_hole.png" id="1_vjrm4"]
+
+[node name="BulletImpact" type="Node3D"]
+
+[node name="Decal" type="Decal" parent="."]
+texture_albedo = ExtResource("1_vjrm4")

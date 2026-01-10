@@ -14,7 +14,15 @@ extends CharacterBody3D
 @export var maxStamina: float = 100.0
 @export var staminaDrainRate: float = 25.0
 @export var staminaRegenRate: float = 15.0
+@export var ak47 : PackedScene
+@export var revolver : PackedScene
+@export var recoilSpeedUp: float = 10.0     # how fast the camera moves up when shooting
+@export var recoilRecoverySpeed: float = 5.0  # how fast the camera returns to normal
+
+var cameraRecoilTarget: float = 0.0  # target recoil from shooting
 @export var staminaRegenDelay: float = 0.4
+var current_weapon : int = 0
+
 
 
 @onready var playerCamera: Camera3D = $PlayerHead/PlayerCamera
@@ -30,26 +38,38 @@ var displayed_stamina: float
 var stamina_velocity: float = 0.0
 var camera_default_position: Vector3
 var mouse_locked: bool = true
+var cameraBaseRotation := Vector2.ZERO  # x = pitch, y = yaw
+var basePitch: float = 0.0  # Player-controlled pitch without recoil
 
 func _ready() -> void:
 	stamina = maxStamina
 	displayed_stamina = maxStamina
 	camera_default_position = playerCamera.transform.origin
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	cameraBaseRotation.x = rad_to_deg(playerCamera.rotation.x)
+	cameraBaseRotation.y = rad_to_deg(rotation.y)
+	basePitch = rad_to_deg(playerCamera.rotation.x)
 
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
+		# Horizontal rotation (player-controlled)
 		rotate_y(deg_to_rad(-event.relative.x * mouseSensitivity))
-		pitch -= event.relative.y * mouseSensitivity
-		pitch = clamp(pitch, -89.0, 89.0)
-		playerCamera.rotation.x = deg_to_rad(pitch)
+		
+		# Vertical rotation (player-controlled)
+		basePitch -= event.relative.y * mouseSensitivity
+		basePitch = clamp(basePitch, -89, 89)
+
 
 func _physics_process(delta: float) -> void:
 	handleMovement(delta)
 	applyGravity(delta)
 	handleJump()
-	
+	if Input.is_action_just_pressed("switch") and current_weapon != 1:
+		switch_gun(1)
+	elif Input.is_action_just_pressed("switch") and current_weapon != 0:
+		switch_gun(0)
 	if is_on_floor() and velocity.length() > 0:
 		headbobTime += delta * velocity.length()
 		playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
@@ -89,8 +109,18 @@ func handleMovement(delta: float) -> void:
 			stamina = min(stamina, maxStamina)
 
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed("ui_cancel"):
-		toggle_mouse_lock()
+	# Smoothly approach the target recoil (slower upward movement)
+	cameraRecoil.x = lerp(cameraRecoil.x, cameraRecoilTarget, recoilSpeedUp * delta)
+
+	# Slowly decay the target toward 0 (camera returning to normal)
+	cameraRecoilTarget = lerp(cameraRecoilTarget, float(0), recoilRecoverySpeed * delta)
+
+	# Apply recoil to camera
+	playerCamera.rotation.x = deg_to_rad(basePitch - cameraRecoil.x)
+
+
+	
+	# Stamina handling etc.
 
 	var stiffness: float = 35.0
 	var damping: float = 14.0
@@ -99,6 +129,12 @@ func _process(delta: float) -> void:
 	stamina_velocity *= exp(-damping * delta)
 	displayed_stamina += stamina_velocity * delta
 	staminaBar.value = displayed_stamina
+
+	# Toggle mouse
+	if Input.is_action_just_pressed("ui_cancel"):
+		toggle_mouse_lock()
+
+
 
 func applyGravity(delta: float) -> void:
 	if not is_on_floor():
@@ -130,3 +166,32 @@ func get_camera_base_position() -> Vector3:
 		return playerCamera.global_position - headbob(headbobTime)
 	return playerCamera.global_position
 	
+var current_weapon_instance: Node3D = null
+
+func switch_gun(index: int):
+	if current_weapon == index:
+		return
+	if current_weapon_instance != null:
+		current_weapon_instance.queue_free()
+		current_weapon_instance = null
+	if index == 0:
+		current_weapon_instance = ak47.instantiate()
+	elif index == 1:
+		current_weapon_instance = revolver.instantiate()
+	else:
+		return
+
+	add_child(current_weapon_instance)
+	current_weapon = index
+
+	# Assign references explicitly
+	current_weapon_instance.player = self
+	current_weapon_instance.playerCamera = playerCamera
+	current_weapon_instance.reticle = $PlayerUI/Reticle
+	current_weapon_instance.ammoLabel = $PlayerUI/AmmoLabel
+	
+var cameraRecoil := Vector2.ZERO
+
+func apply_camera_recoil(pitch_amount: float, yaw_amount: float) -> void:
+	cameraRecoilTarget += pitch_amount
+	# horizontal recoil is ignored

@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://dc7sp1c0l5bqt"]
+[gd_scene load_steps=12 format=3 uid="uid://dc7sp1c0l5bqt"]
 
 [ext_resource type="Script" uid="uid://cbaiqescdumgr" path="res://Scripts/Guns/PlaceHolder/base_gun.gd" id="1_egibc"]
 [ext_resource type="PackedScene" uid="uid://unknf4u1dotx" path="res://Models/Placeholder/Guns/low_poly_gun.glb" id="1_wf4u4"]
+[ext_resource type="PackedScene" uid="uid://cdy4igfpisxoa" path="res://Scenes/Guns/bullet_impact.tscn" id="2_ww4dy"]
 [ext_resource type="AudioStream" uid="uid://dvssvjefxpb2l" path="res://Audio/Guns/ak-47-firing-8760-[AudioTrimmer.com] (1).mp3" id="3_ynewt"]
 [ext_resource type="Material" uid="uid://b2klvo674q0n4" path="res://Effects/MuzzleFlash/base_gun.tres" id="4_eppjt"]
 [ext_resource type="ArrayMesh" uid="uid://cbpf808iw8iyo" path="res://Effects/MuzzleFlash/Flash.obj" id="5_eppjt"]
@@ -10,26 +11,29 @@
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.2046126, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_ww4dy"]
+[sub_resource type="CurveTexture" id="CurveTexture_eppjt"]
 curve = SubResource("Curve_eppjt")
 
 [sub_resource type="Curve" id="Curve_yrst7"]
 _data = [Vector2(0, 0), 0.0, 2.4739532, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_mj2fd"]
+[sub_resource type="CurveTexture" id="CurveTexture_ww4dy"]
 curve = SubResource("Curve_yrst7")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jvexb"]
 gravity = Vector3(0, 0, 0)
 scale_min = 0.7
 scale_max = 0.7
-scale_curve = SubResource("CurveTexture_mj2fd")
+scale_curve = SubResource("CurveTexture_ww4dy")
 color = Color(1.353256, 1.1316217, 0.7893901, 1)
-alpha_curve = SubResource("CurveTexture_ww4dy")
+alpha_curve = SubResource("CurveTexture_eppjt")
 
 [node name="BaseGun" type="Node3D"]
 script = ExtResource("1_egibc")
+recoilamount = -1.0
+recoilPitch = 5.0
+bulletImpactScene = ExtResource("2_ww4dy")
 
 [node name="AK47 Placeholder" parent="." instance=ExtResource("1_wf4u4")]
 transform = Transform3D(-1.0927848e-09, 0, -0.025, 0, 0.025, 0, 0.025, 0, -1.0927848e-09, 0, 0, 0)
@@ -39,7 +43,7 @@ transform = Transform3D(1.1539807e-06, 0, -8.8, 0, 8.8, 0, 8.8, 0, 1.1539807e-06
 material_override = ExtResource("4_eppjt")
 emitting = false
 amount = 1
-lifetime = 0.09999999999999999
+lifetime = 0.1
 one_shot = true
 explosiveness = 1.0
 randomness = 1.0
@@ -48,6 +52,6 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_jvexb")
 draw_pass_1 = ExtResource("5_eppjt")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05568859, 0.0536118, -0.40768188)
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="AK47 Placeholder"]
+transform = Transform3D(-1.7484555e-06, 0, 40, 0, 40, 0, -40, 0, -1.7484555e-06, -16.307276, 2.1444721, 2.2275443)
 stream = ExtResource("3_ynewt")

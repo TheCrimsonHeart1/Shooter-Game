@@ -1,17 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://ddl2gnobsrxta"]
+[gd_scene load_steps=8 format=3 uid="uid://ddl2gnobsrxta"]
 
 [ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="1_a4krk"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
+[ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_5v4k3"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7gvvr"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_a4krk"]
-ground_bottom_color = Color(0.64705884, 0.654902, 0.67058825, 1)
-ground_horizon_color = Color(0.64705884, 0.654902, 0.67058825, 1)
-energy_multiplier = 1.2
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_m1chm"]
+panorama = ExtResource("2_5v4k3")
 
 [sub_resource type="Sky" id="Sky_ggkai"]
-sky_material = SubResource("ProceduralSkyMaterial_a4krk")
+sky_material = SubResource("PanoramaSkyMaterial_m1chm")
 
 [sub_resource type="Environment" id="Environment_41slu"]
 background_mode = 2
@@ -36,11 +35,13 @@ glow_hdr_threshold = 1.42
 glow_hdr_scale = 2.05
 glow_hdr_luminance_cap = 2.75
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.01
+volumetric_fog_density = 0.0112
+volumetric_fog_albedo = Color(0.7666196, 0.76661956, 0.76661956, 1)
+volumetric_fog_emission_energy = 24.8
 adjustment_enabled = true
-adjustment_brightness = 1.07
-adjustment_contrast = 1.19
-adjustment_saturation = 1.14
+adjustment_brightness = 0.72
+adjustment_contrast = 1.14
+adjustment_saturation = 0.86
 
 [node name="MultiplayerManager" type="Node3D"]
 
@@ -54,7 +55,7 @@ mesh = SubResource("BoxMesh_7gvvr")
 environment = SubResource("Environment_41slu")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, -0.6462839, 0.7630971, 0, -0.7630971, -0.6462839, 0, 7, 0)
+transform = Transform3D(0.47679272, 0.03428252, -0.878347, 0.45757928, -0.86285657, 0.21470976, -0.75052667, -0.5042854, -0.42709053, 0, 7, 0)
 shadow_enabled = true
 shadow_blur = 0.58
 
