@@ -33,6 +33,7 @@ alpha_curve = SubResource("CurveTexture_ww4dy")
 script = ExtResource("1_mbkny")
 recoilamount = -3.0
 gunOffset = Vector3(0.25, -0.25, -0.5)
+headbobAmplitude = Vector3(0.001, 0.01, 0)
 recoilPitch = 20.0
 recoilYaw = 4.0
 recoilRecoverySpeed = 7.0

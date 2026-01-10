@@ -32,6 +32,7 @@ alpha_curve = SubResource("CurveTexture_eppjt")
 [node name="BaseGun" type="Node3D"]
 script = ExtResource("1_egibc")
 recoilamount = -1.0
+headbobAmplitude = Vector3(0.001, 0.01, 0)
 recoilPitch = 5.0
 bulletImpactScene = ExtResource("2_ww4dy")
 
