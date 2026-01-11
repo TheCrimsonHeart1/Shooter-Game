@@ -40,6 +40,9 @@ func _physics_process(delta):
 		velocity.z = 0
 
 	move_and_slide()
+	
+	if global_position.distance_to(player.global_position) < 2.0:
+		player.take_damage(10)  # deals 10 damage
 func take_damage(damage_amount: int) -> void:
 	$AudioStreamPlayer3D.play()
 	health -= damage_amount

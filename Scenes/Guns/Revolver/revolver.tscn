@@ -47,10 +47,10 @@ magazineSize = 6
 maxAmmo = 35
 
 [node name="Sketchfab_Scene" parent="." instance=ExtResource("5_m3jcu")]
-transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, 0, 0, 0)
+transform = Transform3D(-0.07, 0, -1.0569706e-08, 0, 0.07, 0, 1.0569706e-08, 0, -0.07, 0, -0.03306853, 0.06889543)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="Sketchfab_Scene"]
-transform = Transform3D(2.2, 0, 2.842171e-14, 0, 2.2, 0, -2.842171e-14, 0, 2.2, 0.010598209, 0.8635338, 2.9280632)
+transform = Transform3D(3.1428573, 0, -1.9980092e-07, 0, 3.1428573, 0, 1.9980092e-07, 0, 3.1428573, 0.025649993, 0.61171156, 2.9133143)
 material_override = ExtResource("2_xef5b")
 emitting = false
 amount = 1
@@ -64,9 +64,10 @@ process_material = SubResource("ParticleProcessMaterial_77pg5")
 draw_pass_1 = ExtResource("3_vnqr4")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Sketchfab_Scene"]
-transform = Transform3D(10, 0, 5.684342e-14, 0, 10, 0, -5.684342e-14, 0, 10, -0.5568859, 0.53611803, -4.076819)
+transform = Transform3D(14.285714, 0, -9.0818617e-07, 0, 14.285714, 0, 9.0818617e-07, 0, 14.285714, -0.79555094, 0.6555036, -6.732637)
 stream = ExtResource("6_xef5b")
 volume_db = -24.716
 
 [node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="Sketchfab_Scene"]
+transform = Transform3D(14.285714, 0, -9.0818617e-07, 0, 14.285714, 0, 9.0818617e-07, 0, 14.285714, 4.56507e-07, -0.11037868, -0.9086107)
 stream = ExtResource("7_vnqr4")

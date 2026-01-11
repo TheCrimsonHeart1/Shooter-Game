@@ -13,6 +13,7 @@ albedo_color = Color(1, 0, 0, 1)
 [node name="CharacterBody3D" type="CharacterBody3D" groups=["enemy"]]
 script = ExtResource("1_icaku")
 speed = 3
+health = 50
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_icaku")

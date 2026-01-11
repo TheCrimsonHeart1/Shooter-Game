@@ -98,5 +98,5 @@ func enemy_killed():
 		wave_in_progress = false
 		enemy_list.clear()
 		print("Wave %d complete!" % current_wave)
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(30.0).timeout
 		start_next_wave()

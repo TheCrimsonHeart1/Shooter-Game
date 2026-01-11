@@ -3,6 +3,8 @@ var normal_color = Color(1, 1, 1)      # white
 var hover_color = Color(1, 0.7, 0.2)   # orange-ish
 @onready var camera = $Camera3D
 var hovered_label: Label3D = null
+func _ready() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var from = camera.project_ray_origin(event.position)

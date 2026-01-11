@@ -120,5 +120,14 @@ scale = Vector2(0.52, 0.52)
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("2_2utkx")
 
+[node name="Label" type="Label" parent="PlayerBody/PlayerUI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
 [node name="PauseMenu" parent="PlayerBody" instance=ExtResource("6_4ofay")]
 visible = false

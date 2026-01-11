@@ -24,6 +24,7 @@ var cameraRecoilTarget: float = 0.0  # target recoil from shooting
 @export var staminaRegenDelay: float = 0.4
 var current_weapon : int = 0
 var hasak47 = false
+var health = 100
 
 var gunAmmo := {
 	0: {"magazine": 30, "ammo": 120},  # AK47
@@ -133,6 +134,8 @@ func handleMovement(delta: float) -> void:
 			stamina = min(stamina, maxStamina)
 
 func _process(delta: float) -> void:
+	if health <= 0:
+		get_tree().change_scene_to_file("res://UI/Main Menu/main_menu.tscn")
 	if Input.is_action_just_pressed("pause"):
 		if isinshop:
 			return
@@ -249,3 +252,6 @@ func apply_camera_recoil(pitch_amount: float, yaw_amount: float) -> void:
 func update_currency(amount):
 	current_currency += amount
 	currencylabel.text = str(current_currency)
+
+func take_damage(amount):
+	health -= amount

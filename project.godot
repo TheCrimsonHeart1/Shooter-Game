@@ -17,6 +17,7 @@ privateKey="e61b94fb4270b2e9"
 [application]
 
 config/name="Shooter Game"
+run/main_scene="uid://vyeghb0o2qd1"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
