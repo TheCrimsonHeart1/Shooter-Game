@@ -6,6 +6,9 @@ extends Node3D
 @export var bone_rot_scene: PackedScene
 @export var spawn_points: Array[Node3D] = []
 @export var wave_label: Label  # drag your WaveLabel here
+@export var wave_timer_label: Label
+@export var time_between_waves := 30.0
+
 
 
 var current_wave: int = 0
@@ -98,5 +101,21 @@ func enemy_killed():
 		wave_in_progress = false
 		enemy_list.clear()
 		print("Wave %d complete!" % current_wave)
-		await get_tree().create_timer(30.0).timeout
-		start_next_wave()
+		start_wave_countdown()
+		
+func start_wave_countdown() -> void:
+	if wave_timer_label:
+		wave_timer_label.visible = true
+
+	var time_left := time_between_waves
+
+	while time_left > 0:
+		if wave_timer_label:
+			wave_timer_label.text = "Next wave in %d" % int(ceil(time_left))
+		await get_tree().process_frame
+		time_left -= get_process_delta_time()
+
+	if wave_timer_label:
+		wave_timer_label.visible = false
+
+	start_next_wave()

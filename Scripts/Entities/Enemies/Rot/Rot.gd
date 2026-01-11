@@ -3,6 +3,12 @@ extends CharacterBody3D
 @export var speed = 1
 @export var accel = 20
 @export var health = 100
+@export var attack_damage := 10
+@export var attack_range := 2.0
+@export var attack_cooldown := 1.2  # seconds between hits
+
+var can_attack := true
+
 
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
 @export var player : CharacterBody3D
@@ -41,8 +47,9 @@ func _physics_process(delta):
 
 	move_and_slide()
 	
-	if global_position.distance_to(player.global_position) < 2.0:
-		player.take_damage(10)  # deals 10 damage
+	if can_attack and global_position.distance_to(player.global_position) <= attack_range:
+		attack_player()
+
 func take_damage(damage_amount: int) -> void:
 	$AudioStreamPlayer3D.play()
 	health -= damage_amount
@@ -50,3 +57,13 @@ func take_damage(damage_amount: int) -> void:
 		if not is_queued_for_deletion():
 			emit_signal("died")
 			queue_free()
+			
+func attack_player():
+	if player == null:
+		return
+
+	can_attack = false
+	player.take_damage(attack_damage)
+
+	await get_tree().create_timer(attack_cooldown).timeout
+	can_attack = true

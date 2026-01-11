@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://gkahjn6hgfgn"]
+[gd_scene load_steps=9 format=3 uid="uid://gkahjn6hgfgn"]
 
 [ext_resource type="Script" uid="uid://dvwclsnd4hxav" path="res://Scripts/Shop/shop.gd" id="1_78vcx"]
+[ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="2_dqdqq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_cpowt"]
 
@@ -8,6 +9,18 @@
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cpowt"]
 radius = 1.553903
+
+[sub_resource type="Theme" id="Theme_dqdqq"]
+default_font = ExtResource("2_dqdqq")
+default_font_size = 42
+
+[sub_resource type="Theme" id="Theme_8dak6"]
+default_font = ExtResource("2_dqdqq")
+default_font_size = 42
+
+[sub_resource type="Theme" id="Theme_w8bjl"]
+default_font = ExtResource("2_dqdqq")
+default_font_size = 42
 
 [node name="Shop" type="Node3D" node_paths=PackedStringArray("shop_ui")]
 script = ExtResource("1_78vcx")
@@ -38,11 +51,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_dqdqq")
 
 [node name="Button3" type="Button" parent="ShopUI/Panel"]
 layout_mode = 1
 offset_right = 81.0
 offset_bottom = 31.0
+theme = SubResource("Theme_8dak6")
 text = "Buy AK47"
 
 [node name="Button4" type="Button" parent="ShopUI/Panel"]
@@ -53,6 +68,7 @@ anchor_bottom = 1.0
 offset_top = -31.0
 offset_right = 81.0
 grow_vertical = 0
+theme = SubResource("Theme_w8bjl")
 text = "Refill Ammo"
 
 [node name="Button2" type="Button" parent="ShopUI/Panel"]
@@ -66,6 +82,7 @@ offset_left = -38.0
 offset_top = -31.0
 grow_horizontal = 0
 grow_vertical = 0
+theme = SubResource("Theme_w8bjl")
 text = "Exit
 "
 

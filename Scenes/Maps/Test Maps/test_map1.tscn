@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://ddl2gnobsrxta"]
+[gd_scene load_steps=23 format=3 uid="uid://ddl2gnobsrxta"]
 
 [ext_resource type="Script" uid="uid://ckkdwopyhoc1e" path="res://Scripts/Director/director.gd" id="1_m1chm"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="1_txh0p"]
@@ -9,6 +9,7 @@
 [ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="6_w2jat"]
 [ext_resource type="ArrayMesh" uid="uid://c5u2rcrgwqllj" path="res://Models/Placeholder/Map/Building.res" id="7_4f7s2"]
 [ext_resource type="PackedScene" uid="uid://gkahjn6hgfgn" path="res://Scenes/Shop/shop.tscn" id="9_d4485"]
+[ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="9_n75fp"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_m1chm"]
 panorama = ExtResource("2_5v4k3")
@@ -72,13 +73,18 @@ data = PackedVector3Array(1, 1.9, 0, -1.4, 1, 1, -1.4, 1.9, 0, 1, 1.9, 0, 1, 1, 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_pco3u"]
 data = PackedVector3Array(1, 1.9, 0, -1.4, 1, 1, -1.4, 1.9, 0, 1, 1.9, 0, 1, 1, 1, -1.4, 1, 1, 1, -1, 1, -1.4, 1, 1, 1, 1, 1, 1, -1, 1, -1.4, -1, 1, -1.4, 1, 1, -1.4, -1, 0, -1.4, 1, -1, -1.4, 1.9, 0, -1.4, -1, 0, -1.4, -1, -1, -1.4, 1, -1, -1.4, -1, 1, -1.4, -1, 0, -1.4, 1.9, 0, -1.4, -1, 1, -1.4, 1.9, 0, -1.4, 1, 1, -1.4, -1, 0, 1, -1, 1, 1, -1, 0, -1.4, -1, 0, -1.4, -1, 1, 1, -1, 1, -1.4, -1, -1, -1.4, -1, 0, 1, -1, 0, -1.4, -1, -1, 1, -1, 0, 1, -1, -1, 1, -1, 0, 1, 1, 1, 1, 1.9, 0, 1, -1, 0, 1, -1, 1, 1, 1, 1, 1, -1, -1, 1, -1, 0, 1, 1.9, 0, 1, -1, -1, 1, 1.9, 0, 1, 1, -1, -1.4, -1, -1, 1, 1, -1, -1.4, 1, -1, -1.4, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1.4, 1.9, 0, -1.4, 1, -1, 1, 1, -1, 1, 1.9, 0, -1.4, 1.9, 0)
 
-[node name="Director" type="Node3D" node_paths=PackedStringArray("playerbody", "spawn_points", "wave_label")]
+[sub_resource type="Theme" id="Theme_d3ijy"]
+default_font = ExtResource("9_n75fp")
+default_font_size = 42
+
+[node name="Director" type="Node3D" node_paths=PackedStringArray("playerbody", "spawn_points", "wave_label", "wave_timer_label")]
 script = ExtResource("1_m1chm")
 playerbody = NodePath("BasePlayer/PlayerBody")
 enemy_scene = ExtResource("4_m1chm")
 bone_rot_scene = ExtResource("3_w2jat")
 spawn_points = [NodePath("EnemySpawnPoint"), NodePath("EnemySpawnPoint2"), NodePath("EnemySpawnPoint3")]
 wave_label = NodePath("UI/WaveLabel")
+wave_timer_label = NodePath("UI/WaveTimerLabel")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_41slu")
@@ -94,10 +100,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.839859, 1, 0)
 [node name="PlayerBody" parent="BasePlayer" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.417946, 0, 0)
 
-[node name="AmmoLabel" parent="BasePlayer/PlayerBody/PlayerUI" index="1"]
+[node name="AmmoLabel" parent="BasePlayer/PlayerBody/PlayerUI" index="2"]
 metadata/_edit_use_anchors_ = true
 
-[node name="Reticle" parent="BasePlayer/PlayerBody/PlayerUI" index="3"]
+[node name="Reticle" parent="BasePlayer/PlayerBody/PlayerUI" index="4"]
 metadata/_edit_use_anchors_ = true
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
@@ -191,6 +197,19 @@ offset_left = 878.0
 offset_top = 3.0
 offset_right = 924.21
 offset_bottom = 26.915
+theme = SubResource("Theme_d3ijy")
+theme_override_font_sizes/font_size = 43
+horizontal_alignment = 1
+
+[node name="WaveTimerLabel" type="Label" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -23.10498
+offset_right = 23.10498
+offset_bottom = 53.0
+grow_horizontal = 2
+theme = SubResource("Theme_d3ijy")
 theme_override_font_sizes/font_size = 43
 horizontal_alignment = 1
 

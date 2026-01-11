@@ -35,6 +35,7 @@ var gunAmmo := {
 @onready var playerCamera: Camera3D = $PlayerHead/PlayerCamera
 @onready var staminaBar: TextureProgressBar = $PlayerUI/StaminaBar
 @onready var ammoLabel: Label = $PlayerUI/AmmoLabel
+@onready var healthBar: TextureProgressBar = $PlayerUI/HealthBar
 
 var accelerationRate: float = 0
 var pitch: float = 0.0
@@ -255,3 +256,4 @@ func update_currency(amount):
 
 func take_damage(amount):
 	health -= amount
+	healthBar.value = health

@@ -31,6 +31,7 @@ color = Color(1.353256, 1.1316217, 0.7893901, 1)
 alpha_curve = SubResource("CurveTexture_ww4dy")
 
 [node name="Revolver" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.063453294, 0)
 script = ExtResource("1_mbkny")
 recoilamount = -5.0
 gunOffset = Vector3(0.25, -0.25, -0.5)
@@ -47,7 +48,7 @@ magazineSize = 6
 maxAmmo = 35
 
 [node name="Sketchfab_Scene" parent="." instance=ExtResource("5_m3jcu")]
-transform = Transform3D(-0.07, 0, -1.0569706e-08, 0, 0.07, 0, 1.0569706e-08, 0, -0.07, 0, -0.03306853, 0.06889543)
+transform = Transform3D(-0.07, 0, -1.0569706e-08, 0, 0.07, 0, 1.0569706e-08, 0, -0.07, 0, 0.006852813, 0.06889543)
 
 [node name="GPUParticles3D" type="GPUParticles3D" parent="Sketchfab_Scene"]
 transform = Transform3D(3.1428573, 0, -1.9980092e-07, 0, 3.1428573, 0, 1.9980092e-07, 0, 3.1428573, 0.025649993, 0.61171156, 2.9133143)

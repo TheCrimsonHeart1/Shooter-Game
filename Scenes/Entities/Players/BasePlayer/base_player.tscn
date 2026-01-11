@@ -1,10 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://bsybk1mgogfkb"]
+[gd_scene load_steps=19 format=3 uid="uid://bsybk1mgogfkb"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
 [ext_resource type="Texture2D" uid="uid://cp666d11xkuj6" path="res://Texures/Placeholder/Guns/crosshair097.png" id="2_2utkx"]
 [ext_resource type="PackedScene" uid="uid://dc7sp1c0l5bqt" path="res://Scenes/Guns/BaseGun/base_gun.tscn" id="2_guygx"]
 [ext_resource type="PackedScene" uid="uid://b3cvp3osl62qa" path="res://Scenes/Guns/Revolver/revolver.tscn" id="3_4ofay"]
 [ext_resource type="Shader" uid="uid://cks2u821xm8kc" path="res://Scenes/Entities/Players/BasePlayer/base_player.gdshader" id="3_n4e0b"]
+[ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="5_2bf54"]
 [ext_resource type="PackedScene" uid="uid://6mxyhmbovc6q" path="res://UI/Main Menu/pause_menu.tscn" id="6_4ofay"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
@@ -28,6 +29,16 @@ colors = PackedColorArray(2.9841065e-06, 0.68260616, 0.22085953, 1, 0, 0.6823529
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_guygx"]
 gradient = SubResource("Gradient_fkeof")
+
+[sub_resource type="Gradient" id="Gradient_2bf54"]
+colors = PackedColorArray(1, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rnxkg"]
+gradient = SubResource("Gradient_2bf54")
+
+[sub_resource type="Theme" id="Theme_2bf54"]
+default_font = ExtResource("5_2bf54")
+default_font_size = 42
 
 [node name="BasePlayer" type="Node3D"]
 
@@ -65,43 +76,59 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 19.0
-offset_top = -52.0
+offset_top = -33.0
 offset_right = 83.0
-offset_bottom = 12.0
+offset_bottom = 31.0
 grow_vertical = 0
-scale = Vector2(7.295, 0.58)
+scale = Vector2(4.895, 0.33999997)
 value = 100.0
 texture_under = SubResource("GradientTexture2D_6xa31")
 texture_progress = SubResource("GradientTexture2D_guygx")
 metadata/_edit_use_anchors_ = true
 
+[node name="HealthBar" type="TextureProgressBar" parent="PlayerBody/PlayerUI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 19.0
+offset_top = -70.0
+offset_right = 83.0
+offset_bottom = -6.0
+grow_vertical = 0
+scale = Vector2(4.895, 0.33999997)
+value = 100.0
+texture_under = SubResource("GradientTexture2D_6xa31")
+texture_progress = SubResource("GradientTexture2D_rnxkg")
+metadata/_edit_use_anchors_ = true
+
 [node name="AmmoLabel" type="Label" parent="PlayerBody/PlayerUI"]
-anchors_preset = -1
-anchor_left = 0.84
-anchor_top = 0.89
-anchor_right = 0.84
-anchor_bottom = 0.89
-offset_left = 156.20007
-offset_top = 54.799988
-offset_right = 221.20007
-offset_bottom = 85.79999
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -92.0
+offset_top = -70.0
+offset_right = -27.0
+offset_bottom = -18.0
 grow_horizontal = 0
 grow_vertical = 0
-scale = Vector2(2, 2)
+theme = SubResource("Theme_2bf54")
 
 [node name="CurrencyLabel" type="Label" parent="PlayerBody/PlayerUI"]
-anchors_preset = -1
-anchor_left = 0.84
-anchor_top = 0.89
-anchor_right = 0.84
-anchor_bottom = 0.89
-offset_left = 163.20007
-offset_top = -47.200012
-offset_right = 228.20007
-offset_bottom = -16.200012
+modulate = Color(1, 1, 0, 1)
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -92.0
+offset_top = 377.0
+offset_right = -27.0
+offset_bottom = 429.0
 grow_horizontal = 0
-grow_vertical = 0
-scale = Vector2(2, 2)
+grow_vertical = 2
+theme = SubResource("Theme_2bf54")
 horizontal_alignment = 1
 
 [node name="Reticle" type="TextureRect" parent="PlayerBody/PlayerUI"]
