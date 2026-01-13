@@ -1,13 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://vyeghb0o2qd1"]
+[gd_scene load_steps=13 format=3 uid="uid://vyeghb0o2qd1"]
 
-[ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="1_3g31d"]
-[ext_resource type="Script" uid="uid://b5oybwxakd4ua" path="res://UI/Main Menu/main_menu.gd" id="1_jri5q"]
 [ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_v04x6"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="4_mqkp3"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_v04x6"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_jri5q"]
+[ext_resource type="Script" uid="uid://d1iey61mlik3f" path="res://Scenes/Maps/Test Maps/multiplayer_manager.gd" id="5_k0v0h"]
+[ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="6_ajqx1"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_jri5q"]
 panorama = ExtResource("2_v04x6")
@@ -46,50 +42,32 @@ adjustment_brightness = 0.72
 adjustment_contrast = 1.14
 adjustment_saturation = 0.86
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_v04x6"]
-size = Vector3(0.32348633, 0.17626953, 0.072387695)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mqkp3"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.11858138, 0.11858138, 0.11858138, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="Theme" id="Theme_vq10u"]
+Panel/styles/panel = SubResource("StyleBoxFlat_mqkp3")
+
+[sub_resource type="Theme" id="Theme_7i25j"]
+default_font = ExtResource("4_mqkp3")
+default_font_size = 42
+
+[sub_resource type="Theme" id="Theme_mqkp3"]
+default_font = ExtResource("4_mqkp3")
+
+[sub_resource type="Theme" id="Theme_k0v0h"]
+default_font = ExtResource("4_mqkp3")
 
 [node name="Main Menu" type="Node3D"]
-script = ExtResource("1_jri5q")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(6.1720405, 0, 0, 0, 1, 0, 0, 0, 11.92233, 0, 0, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-material_override = ExtResource("1_3g31d")
-mesh = SubResource("BoxMesh_v04x6")
-skeleton = NodePath("../../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-shape = SubResource("BoxShape3D_jri5q")
-
-[node name="StaticBody3D2" type="StaticBody3D" parent="."]
-transform = Transform3D(0.58112276, 0, 0.28116274, 0, 41.62157, 0, 0.20793475, 0, -0.78577566, -4, 2, -5)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-material_override = ExtResource("1_3g31d")
-mesh = SubResource("BoxMesh_v04x6")
-skeleton = NodePath("../../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-shape = SubResource("BoxShape3D_jri5q")
-
-[node name="StaticBody3D3" type="StaticBody3D" parent="."]
-transform = Transform3D(0.48442507, 0, -0.05575777, 0, 33.297256, 0, -0.039903637, 0, -0.6768931, 2, 1, -5)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D3"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-material_override = ExtResource("1_3g31d")
-mesh = SubResource("BoxMesh_v04x6")
-skeleton = NodePath("../../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3"]
-transform = Transform3D(7.1, 0, 0, 0, 0.099999964, 0, 0, 0, 5.76, 0, 0, 0)
-shape = SubResource("BoxShape3D_jri5q")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_mqkp3")
@@ -101,33 +79,104 @@ shadow_blur = 0.58
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.9234515, -0.14585091, 0.3549153, 0, 0.92494464, 0.380102, -0.38371518, -0.35100576, 0.8541415, 0.5982852, 4.8263807, 2.005267)
+near = 1.966
 
-[node name="PlayButton" type="StaticBody3D" parent="."]
+[node name="MultiplayerManager" type="Node3D" parent="."]
+transform = Transform3D(2.9802322e-08, 0, 1, 0, 1, 0, -1, 0, 2.9802322e-08, -21.119108, 1.3309274, 0)
+script = ExtResource("5_k0v0h")
+player_scene = ExtResource("6_ajqx1")
 
-[node name="PlayButton" type="Label3D" parent="PlayButton"]
-transform = Transform3D(0.98372865, 0, 0.17966075, 0, 1, 0, -0.17966075, 0, 0.98372865, -0.5946647, 4.307518, 0)
-text = "Play
+[node name="CanvasLayer" type="CanvasLayer" parent="MultiplayerManager"]
+
+[node name="Panel" type="Panel" parent="MultiplayerManager/CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_vq10u")
+
+[node name="Host" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -77.0
+offset_top = 239.0
+offset_right = 81.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(0.54999745, 1, 0.4957736, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Host"
+
+[node name="Join" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -61.0
+offset_right = 72.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(0.9022766, 0.91725326, 0, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Join   
 "
-font = ExtResource("4_mqkp3")
 
-[node name="PlayButton2" type="CollisionShape3D" parent="PlayButton"]
-transform = Transform3D(0.98372865, 0, 0.17966075, 0, 1, 0, -0.17966075, 0, 0.98372865, -0.61034197, 4.2818832, 0.001808394)
-shape = SubResource("BoxShape3D_v04x6")
+[node name="IPAddressInput" type="LineEdit" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -109.0
+offset_top = 39.0
+offset_right = 108.88501
+offset_bottom = 92.43506
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_mqkp3")
+placeholder_text = "Enter IP"
 
-[node name="QuitButton" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.61824775, 0)
+[node name="Label" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme = SubResource("Theme_k0v0h")
+theme_override_font_sizes/font_size = 35
+text = "Players:"
 
-[node name="QuitButton" type="Label3D" parent="QuitButton"]
-transform = Transform3D(0.98372865, 0, 0.17966075, 0, 1, 0, -0.17966075, 0, 0.98372865, -0.5946647, 4.307518, 0)
-text = "Quit
-"
-font = ExtResource("4_mqkp3")
+[node name="Label2" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+offset_left = 143.0
+offset_right = 276.0
+offset_bottom = 43.0
+theme = SubResource("Theme_k0v0h")
+theme_override_font_sizes/font_size = 35
+text = "0/2"
 
-[node name="QuitButton2" type="CollisionShape3D" parent="QuitButton"]
-transform = Transform3D(0.98372865, 0, 0.17966075, 0, 1, 0, -0.17966075, 0, 0.98372865, -0.61034197, 4.2818832, 0.001808394)
-shape = SubResource("BoxShape3D_v04x6")
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="MultiplayerManager"]
+_spawnable_scenes = PackedStringArray("uid://ddl2gnobsrxta", "uid://b3cvp3osl62qa", "uid://dc7sp1c0l5bqt")
+spawn_path = NodePath("../LevelContainer")
 
-[connection signal="mouse_entered" from="PlayButton" to="." method="_on_play_button_mouse_entered"]
-[connection signal="mouse_exited" from="PlayButton" to="." method="_on_play_button_mouse_exited"]
-[connection signal="mouse_entered" from="QuitButton" to="." method="_on_quit_button_mouse_entered"]
-[connection signal="mouse_exited" from="QuitButton" to="." method="_on_quit_button_mouse_exited"]
+[node name="EnemyContainer" type="Node3D" parent="MultiplayerManager"]
+transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.2939847e-07, -1.3309274, 21.119108)
+
+[node name="LevelContainer" type="Node3D" parent="MultiplayerManager"]
+transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.2939847e-07, -1.3309274, 21.119108)
+
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Host" to="MultiplayerManager" method="_on_host_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Join" to="MultiplayerManager" method="_on_join_pressed"]

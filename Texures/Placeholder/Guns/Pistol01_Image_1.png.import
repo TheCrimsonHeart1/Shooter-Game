@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8dhd5bwyvaju"
-path.s3tc="res://.godot/imported/Pistolwitharms2_arms.png-7c937044f50119361e9c5009cd922dcc.s3tc.ctex"
+uid="uid://dut4m2d0mbxn3"
+path.s3tc="res://.godot/imported/Pistol01_Image_1.png-6e7ae888c57884b4091a829a95018b5c.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "7f0855d4997b09dde884d2e873fb4cff"
+"md5": "6ffaab616911f7d33c8511e0a0d4aedb"
 }
 
 [deps]
 
-source_file="res://Texures/Placeholder/Guns/Pistolwitharms2_arms.png"
-dest_files=["res://.godot/imported/Pistolwitharms2_arms.png-7c937044f50119361e9c5009cd922dcc.s3tc.ctex"]
+source_file="res://Texures/Placeholder/Guns/Pistol01_Image_1.png"
+dest_files=["res://.godot/imported/Pistol01_Image_1.png-6e7ae888c57884b4091a829a95018b5c.s3tc.ctex"]
 
 [params]
 

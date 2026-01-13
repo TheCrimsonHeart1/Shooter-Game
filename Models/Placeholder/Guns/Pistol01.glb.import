@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b2kbgbw23tp5b"
-path="res://.godot/imported/Pistolwitharms2.glb-64a9e0f57435c72c585bcfa10d997b02.scn"
+uid="uid://lynkq2r538xh"
+path="res://.godot/imported/Pistol01.glb-de3fad870c2611ea5e3a21490f0dd63b.scn"
 
 [deps]
 
-source_file="res://Models/Placeholder/Guns/Pistolwitharms2.glb"
-dest_files=["res://.godot/imported/Pistolwitharms2.glb-64a9e0f57435c72c585bcfa10d997b02.scn"]
+source_file="res://Models/Placeholder/Guns/Pistol01.glb"
+dest_files=["res://.godot/imported/Pistol01.glb-de3fad870c2611ea5e3a21490f0dd63b.scn"]
 
 [params]
 

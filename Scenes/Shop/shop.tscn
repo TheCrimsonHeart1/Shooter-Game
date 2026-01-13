@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://gkahjn6hgfgn"]
+[gd_scene load_steps=8 format=3 uid="uid://gkahjn6hgfgn"]
 
 [ext_resource type="Script" uid="uid://dvwclsnd4hxav" path="res://Scripts/Shop/shop.gd" id="1_78vcx"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="2_dqdqq"]
@@ -11,10 +11,6 @@
 radius = 1.553903
 
 [sub_resource type="Theme" id="Theme_dqdqq"]
-default_font = ExtResource("2_dqdqq")
-default_font_size = 42
-
-[sub_resource type="Theme" id="Theme_8dak6"]
 default_font = ExtResource("2_dqdqq")
 default_font_size = 42
 
@@ -53,13 +49,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_dqdqq")
 
-[node name="Button3" type="Button" parent="ShopUI/Panel"]
-layout_mode = 1
-offset_right = 81.0
-offset_bottom = 31.0
-theme = SubResource("Theme_8dak6")
-text = "Buy AK47"
-
 [node name="Button4" type="Button" parent="ShopUI/Panel"]
 layout_mode = 1
 anchors_preset = 2
@@ -86,6 +75,5 @@ theme = SubResource("Theme_w8bjl")
 text = "Exit
 "
 
-[connection signal="pressed" from="ShopUI/Panel/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="ShopUI/Panel/Button4" to="." method="_on_button_4_pressed"]
 [connection signal="pressed" from="ShopUI/Panel/Button2" to="." method="_on_button_2_pressed"]

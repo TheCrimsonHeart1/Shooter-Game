@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c700tnumbu1wk"
-path.s3tc="res://.godot/imported/Pistolwitharms2_Image_1.png-ba3372102095968d80c2db38194396d2.s3tc.ctex"
+uid="uid://bsaprqg1ucw8k"
+path.s3tc="res://.godot/imported/FleshRot_9315.jpg-928707079b738e0547f526d76fef7060.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "6ffaab616911f7d33c8511e0a0d4aedb"
+"md5": "53fab8cb9296434a91198c414b79681a"
 }
 
 [deps]
 
-source_file="res://Texures/Placeholder/Guns/Pistolwitharms2_Image_1.png"
-dest_files=["res://.godot/imported/Pistolwitharms2_Image_1.png-ba3372102095968d80c2db38194396d2.s3tc.ctex"]
+source_file="res://Models/Enemies/FleshRot_9315.jpg"
+dest_files=["res://.godot/imported/FleshRot_9315.jpg-928707079b738e0547f526d76fef7060.s3tc.ctex"]
 
 [params]
 

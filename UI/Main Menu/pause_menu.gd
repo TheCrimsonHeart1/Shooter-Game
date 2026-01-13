@@ -1,6 +1,6 @@
 extends Control
 
-@onready var player = get_tree().current_scene.get_node("Player") # adjust path
+
 
 func _ready():
 	visible = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bsybk1mgogfkb"]
+[gd_scene load_steps=20 format=3 uid="uid://bsybk1mgogfkb"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
 [ext_resource type="Texture2D" uid="uid://cp666d11xkuj6" path="res://Texures/Placeholder/Guns/crosshair097.png" id="2_2utkx"]
@@ -9,9 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://6mxyhmbovc6q" path="res://UI/Main Menu/pause_menu.tscn" id="6_4ofay"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2bf54"]
-albedo_color = Color(0, 1, 0, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_2useb"]
 
@@ -56,6 +53,7 @@ properties/1/replication_mode = 1
 [node name="PlayerBody" type="CharacterBody3D" parent="."]
 floor_snap_length = 0.32
 script = ExtResource("1_evp4c")
+headbobAmplitude = 0.05
 ak47 = ExtResource("2_guygx")
 revolver = ExtResource("3_4ofay")
 
@@ -63,7 +61,6 @@ revolver = ExtResource("3_4ofay")
 shape = SubResource("CapsuleShape3D_2useb")
 
 [node name="PlayerMesh" type="MeshInstance3D" parent="PlayerBody"]
-material_override = SubResource("StandardMaterial3D_2bf54")
 mesh = SubResource("CapsuleMesh_2useb")
 
 [node name="PlayerHead" type="Node3D" parent="PlayerBody"]

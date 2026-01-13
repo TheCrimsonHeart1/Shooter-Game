@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c06o31u03rl10"
-path="res://.godot/imported/default arms.glb-10858cd1b1bfe49cbb8bf56d37d284df.scn"
+uid="uid://b0w7qi4c7kyei"
+path="res://.godot/imported/Pistol01Betterreload.glb-1496f08e5dc2769de738da73781906b4.scn"
 
 [deps]
 
-source_file="res://Models/Placeholder/Guns/default arms.glb"
-dest_files=["res://.godot/imported/default arms.glb-10858cd1b1bfe49cbb8bf56d37d284df.scn"]
+source_file="res://Models/Placeholder/Guns/Pistol01Betterreload.glb"
+dest_files=["res://.godot/imported/Pistol01Betterreload.glb-1496f08e5dc2769de738da73781906b4.scn"]
 
 [params]
 

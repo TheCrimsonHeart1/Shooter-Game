@@ -1,16 +1,19 @@
-[gd_scene load_steps=12 format=4 uid="uid://c763kk01mqd33"]
+[gd_scene load_steps=13 format=4 uid="uid://dfgclpsxfoxwf"]
 
-[ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_icaku"]
-[ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_5uorb"]
-[ext_resource type="Texture2D" uid="uid://bsaprqg1ucw8k" path="res://Models/Enemies/FleshRot_9315.jpg" id="3_bcfhn"]
+[ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_2372c"]
+[ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_xp50u"]
+[ext_resource type="Texture2D" uid="uid://bsaprqg1ucw8k" path="res://Models/Enemies/FleshRot_9315.jpg" id="3_ljcw1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bcfhn"]
 size = Vector3(0.56762695, 2.1674805, 0.44781494)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2372c"]
+albedo_color = Color(0.1482766, 0.26939046, 0, 1)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ldtt4"]
 resource_name = "M_Char"
 cull_mode = 2
-albedo_texture = ExtResource("3_bcfhn")
+albedo_texture = ExtResource("3_ljcw1")
 metallic = 0.5846154
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_p2hgo"]
@@ -406,9 +409,10 @@ properties/3/spawn = true
 properties/3/replication_mode = 1
 
 [node name="CharacterBody3D" type="CharacterBody3D" groups=["enemy"]]
-script = ExtResource("1_icaku")
-speed = 3
+script = ExtResource("1_2372c")
+speed = 7
 health = 50
+attack_cooldown = 0.7
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.028442383, 0.10500145, -0.08560181)
@@ -419,7 +423,7 @@ avoidance_enabled = true
 radius = 0.6
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource("2_5uorb")
+stream = ExtResource("2_xp50u")
 volume_db = -6.992
 
 [node name="FleshRot" type="Node3D" parent="."]
@@ -589,6 +593,7 @@ bones/19/rotation = Quaternion(0.033468362, 0.84038913, -0.5408002, 0.012696618)
 bones/19/scale = Vector3(1.0000001, 1.0000004, 1)
 
 [node name="Object_9" type="MeshInstance3D" parent="FleshRot/Sketchfab_model/17a82bbd014544a29ff949ddc4986f31_fbx/Object_2/RootNode/Root/Object_6/Skeleton3D"]
+material_override = SubResource("StandardMaterial3D_2372c")
 mesh = SubResource("ArrayMesh_p2hgo")
 skin = SubResource("Skin_j55mn")
 
