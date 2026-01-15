@@ -18,22 +18,8 @@ func _ready() -> void:
 	spawner.add_spawnable_scene("res://Scenes/Weapons/AK47.tscn")
 	spawner.add_spawnable_scene("res://Scenes/Weapons/Revolver.tscn")
 func _on_host_pressed() -> void:
-	# 1. Attempt to port forward automatically before starting the server
 	setup_upnp(1027)
-	
-	# 2. Start the server as normal
-	var error = peer.create_server(1027)
-	if error != OK:
-		print("Failed to host: ", error)
-		return
-		
-	multiplayer.multiplayer_peer = peer
-	multiplayer.peer_connected.connect(_on_peer_connected)
-	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-	
-	connected_players.append(multiplayer.get_unique_id())
-	print("Server started. Host ID:", multiplayer.get_unique_id())
-	update_player_count_ui()
+	start_network_as_server(32) # Allow up to 32 players
 	check_start_game()
 func _on_join_pressed() -> void:
 	# Retrieve the text from the LineEdit
@@ -76,16 +62,19 @@ func check_start_game():
 func load_game_scene():
 	if not multiplayer.is_server(): return
 	
+	# Use call_local so the host also hides their menu
 	hide_menu_and_capture_mouse.rpc()
 	
+	# Prevent loading twice
+	if level_container.get_child_count() > 0:
+		return
+
 	var map = load(game_scene_path).instantiate()
 	level_container.add_child(map, true)
 	
-	# Use a loop index to create different offsets
+	# Spawn players
 	for i in range(connected_players.size()):
-		var id = connected_players[i]
-		# Pass the index 'i' to determine the position
-		spawn_player(id, i)
+		spawn_player(connected_players[i], i)
 
 func spawn_player(id: int, index: int = 0):
 	if not multiplayer.is_server(): return
@@ -150,3 +139,40 @@ func setup_upnp(port: int):
 			print("Port Forwarding Successful! Your Public IP is: ", upnp.query_external_address())
 func update_player_count_ui():
 	$CanvasLayer/Panel/Label2.text = str(connected_players.size()) + "/" + str(min_players)
+
+
+func _on_singleplayer_pressed() -> void:
+	# Start a server with only 1 slot and no UPNP
+	start_network_as_server(1)
+	
+	# In singleplayer, we don't wait for others, just force start
+	load_game_scene()
+func start_network_as_server(max_players: int):
+	var error = peer.create_server(1027, max_players)
+	if error != OK:
+		print("Failed to host: ", error)
+		return
+		
+	multiplayer.multiplayer_peer = peer
+	
+	# Connect signals if they aren't already (prevents double-connection)
+	if not multiplayer.peer_connected.is_connected(_on_peer_connected):
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	
+	# Add the host to the list immediately
+	connected_players.clear()
+	connected_players.append(multiplayer.get_unique_id())
+	
+	print("Network started as Server. Mode: ", "Singleplayer" if max_players == 1 else "Multiplayer")
+	update_player_count_ui()
+
+
+func _on_multiplayer_pressed() -> void:
+	$CanvasLayer/Panel/IPAddressInput.visible = true
+	$CanvasLayer/Panel/Label.visible = true
+	$CanvasLayer/Panel/Label2.visible = true
+	$CanvasLayer/Panel/Host.visible = true
+	$CanvasLayer/Panel/Join.visible = true
+	$CanvasLayer/Panel/Singleplayer.visible = false
+	$CanvasLayer/Panel/Multiplayer.visible = false

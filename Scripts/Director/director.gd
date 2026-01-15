@@ -14,7 +14,7 @@ var fast_rot_percent: float = 0.1  # Chance for fast_rot, adjust as needed
 
 var current_wave: int = 0
 var current_enemies: int = 0
-var enemies_per_wave: int = 3
+var enemies_per_wave: int = 10
 var wave_in_progress: bool = false
 var bone_rot_percent: float = 0.2
 
@@ -30,13 +30,14 @@ func start_next_wave() -> void:
 
 	wave_in_progress = true
 	current_wave += 1
-	var num_to_spawn: int = enemies_per_wave + (current_wave - 1) * 2
+	var num_to_spawn: int = enemies_per_wave + (current_wave - 1) * 3
 
 	# Notify all clients to show their LOCAL UI
 	show_wave_text.rpc(current_wave)
 
 	current_enemies = num_to_spawn
 	for i in range(num_to_spawn):
+		await get_tree().create_timer(1.0).timeout
 		spawn_enemy()
 
 @rpc("call_local", "reliable")

@@ -97,6 +97,7 @@ grow_vertical = 2
 theme = SubResource("Theme_vq10u")
 
 [node name="Host" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -115,7 +116,47 @@ theme_override_constants/outline_size = 15
 theme_override_font_sizes/font_size = 68
 text = "Host"
 
+[node name="Singleplayer" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -203.0
+offset_top = -14.0
+offset_right = 203.0
+offset_bottom = 77.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Singleplayer"
+
+[node name="Multiplayer" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -203.0
+offset_top = 121.0
+offset_right = 203.0
+offset_bottom = 212.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Multiplayer
+"
+
 [node name="Join" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -136,6 +177,7 @@ text = "Join
 "
 
 [node name="IPAddressInput" type="LineEdit" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -152,6 +194,7 @@ theme = SubResource("Theme_mqkp3")
 placeholder_text = "Enter IP"
 
 [node name="Label" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
@@ -160,6 +203,7 @@ theme_override_font_sizes/font_size = 35
 text = "Players:"
 
 [node name="Label2" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
 layout_mode = 1
 offset_left = 143.0
 offset_right = 276.0
@@ -179,4 +223,6 @@ transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.29
 transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.2939847e-07, -1.3309274, 21.119108)
 
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Host" to="MultiplayerManager" method="_on_host_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Singleplayer" to="MultiplayerManager" method="_on_singleplayer_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Multiplayer" to="MultiplayerManager" method="_on_multiplayer_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Join" to="MultiplayerManager" method="_on_join_pressed"]

@@ -8,6 +8,7 @@ var playerCamera: Camera3D
 @onready var ammoLabel: Label
 @onready var reticle: TextureRect
 var current_weapon: Node3D = null
+var headbobOffset: Vector3 = Vector3.ZERO
 
 # --- Gun settings ---
 @export var recoilamount: float = -0.5
@@ -32,13 +33,11 @@ var swayRotation: Vector3 = Vector3.ZERO
 var targetSwayOffset: Vector3 = Vector3.ZERO
 var targetSwayRotation: Vector3 = Vector3.ZERO
 
-# --- Recoil ---
 @export var recoilPitch: float = 10.0
 @export var recoilYaw: float = 2.0
 @export var recoilRecoverySpeed: float = 10.0
 var recoilOffset: Vector3 = Vector3.ZERO
 
-# --- Combat ---
 @export var fireRate: float = 0.1
 @export var damage: float = 25.0
 @export var range: float = 100.0
@@ -70,12 +69,16 @@ func _ready():
 	currentAmmo = maxAmmo
 	currentOffset = gunOffset
 	update_ammo_ui()
-
-
+	if $"humanoid (3)1/AnimationPlayer" != null:
+		$"humanoid (3)1/AnimationPlayer".speed_scale = 1.5
+		$"humanoid (3)1/AnimationPlayer".play("reload")
+	elif $"humanoid (4)Soldierprimary2/AnimationPlayer":
+		$"humanoid (4)Soldierprimary2/AnimationPlayer".play("reload")
+		
 func _process(delta):
 	if not player or not playerCamera: 
 		return
-		
+
 	if not player.is_multiplayer_authority():
 		return
 
@@ -87,6 +90,7 @@ func _process(delta):
 			finish_reload()
 
 	handle_sway(delta)
+	handle_headbob(delta)  # <-- add this
 	handle_gun(delta)
 
 	if Input.is_action_pressed("shoot") and fireTimer <= 0.0 and not isReloading:
@@ -94,6 +98,7 @@ func _process(delta):
 
 	if Input.is_action_just_pressed("reload"):
 		start_reload()
+
 
 func _input(event):
 	if not player or not player.is_multiplayer_authority() or not playerCamera:
@@ -117,11 +122,14 @@ func handle_gun(delta):
 		return
 
 	isAiming = Input.is_action_pressed("aim")
+	if playerCamera:
+		var targetFOV = 70.0 if isAiming else 90.0
+		playerCamera.fov = lerp(playerCamera.fov, targetFOV, 8.0 * delta)
 	var targetOffset = gunOffset + (adsOffset if isAiming else Vector3.ZERO)
 	currentOffset = currentOffset.lerp(targetOffset, adsSpeed * delta)
 	recoilOffset = recoilOffset.lerp(Vector3.ZERO, recoilRecoverySpeed * delta)
 
-	var offset_global = playerCamera.global_transform.basis * (currentOffset + swayOffset)
+	var offset_global = playerCamera.global_transform.basis * (currentOffset + swayOffset + headbobOffset)
 	global_position = playerCamera.global_position + offset_global
 
 	var camera_forward = -playerCamera.global_transform.basis.z
@@ -150,13 +158,22 @@ func shoot():
 
 	shoot_ray()
 
-@rpc("any_peer", "call_local", "unreliable")
+
+@rpc("any_peer", "call_local", "unreliable") # Unreliable is better for fast sounds
 func play_shoot_effects():
-	if shootAudio: shootAudio.play()
+	if not is_instance_valid(self) or not is_inside_tree():
+		return
+	
+	if shootAudio:
+		# If the sound is already playing, restart it for a crisp "click" 
+		# rather than stacking multiple instances of the same sound
+		if shootAudio.playing:
+			shootAudio.stop()
+		shootAudio.play()
+		
 	if muzzleFlash:
 		muzzleFlash.restart()
 		muzzleFlash.emitting = true
-
 func shoot_ray():
 	if not player or not playerCamera:
 		return
@@ -221,9 +238,10 @@ func start_reload():
 	if isReloading or currentAmmo <= 0: return
 	isReloading = true
 	reloadTimer = reloadTime
-	if anim_tree:
-		anim_tree.set("parameters/Reload/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
-
+	if $"humanoid (3)1/AnimationPlayer" != null:
+		$"humanoid (3)1/AnimationPlayer".play("reload")
+	if $"humanoid (4)Soldierprimary2/AnimationPlayer" != null:
+		$"humanoid (4)Soldierprimary2/AnimationPlayer".play("reload")
 func finish_reload():
 	isReloading = false
 	var amount = min(magazineSize - currentMagazine, currentAmmo)
@@ -253,3 +271,19 @@ func request_weapon_server(scene_path: String):
 
 	# Authority belongs to the player
 	weapon.set_multiplayer_authority(get_multiplayer_authority())
+func handle_headbob(delta):
+	# Use horizontal velocity (X and Z) so gravity (Y) doesn't affect the bob
+	var horizontal_vel = Vector2(player.velocity.x, player.velocity.z).length()
+	
+	if player.is_on_floor() and horizontal_vel > 0.1:
+		# Increase timer based on frequency and movement speed
+		# Ensure player.movementSpeed is not zero to avoid crash
+		var speed_factor = horizontal_vel / max(player.movementSpeed, 0.1)
+		headbobTimer += delta * headbobFrequency * speed_factor
+		
+		headbobOffset.x = cos(headbobTimer * 0.5) * headbobAmplitude.x
+		headbobOffset.y = sin(headbobTimer) * headbobAmplitude.y
+	else:
+		# Smoothly return to zero when not moving
+		headbobTimer = 0
+		headbobOffset = headbobOffset.lerp(Vector3.ZERO, 10 * delta)

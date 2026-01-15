@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dfgclpsxfoxwf" path="res://Scenes/Entities/Enemies/Rot/rot_fast.tscn" id="4_n75fp"]
 [ext_resource type="PackedScene" uid="uid://chat8tgedk7ji" path="res://Scenes/Entities/Enemies/Rot/enemy_spawn_point.tscn" id="6_1lnse"]
 [ext_resource type="Material" uid="uid://c5pmgln4fm1t3" path="res://Materials/Maps/Prototype/PrototypeMaterial.tres" id="6_w2jat"]
-[ext_resource type="ArrayMesh" uid="uid://c5u2rcrgwqllj" path="res://Models/Placeholder/Map/Building.res" id="7_4f7s2"]
+[ext_resource type="ArrayMesh" uid="uid://b4tmvcsigwm2r" path="res://Models/Enemies/Placeholder/Map/Building.res" id="7_4f7s2"]
 [ext_resource type="PackedScene" uid="uid://gkahjn6hgfgn" path="res://Scenes/Shop/shop.tscn" id="9_d4485"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="9_n75fp"]
 
@@ -154,13 +154,13 @@ transform = Transform3D(37.281048, 0, 0, 0, 1, 0, 0, 0, 33.155685, -14, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_pco3u")
 
 [node name="EnemySpawnPoint" parent="." instance=ExtResource("6_1lnse")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.323057, 5.1410513, -6.0648823)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.323057, 1.5112448, -6.0648823)
 
 [node name="EnemySpawnPoint2" parent="." instance=ExtResource("6_1lnse")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.711502, 5.1410513, -0.12441206)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.711502, 1.5112448, -0.12441206)
 
 [node name="EnemySpawnPoint3" parent="." instance=ExtResource("6_1lnse")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.321771, 5.1410513, 28.653028)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.321771, 1.5112448, 28.653028)
 
 [node name="UI" type="CanvasLayer" parent="."]
 

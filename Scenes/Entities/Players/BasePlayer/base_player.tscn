@@ -71,7 +71,6 @@ mesh = SubResource("CapsuleMesh_2useb")
 [node name="PlayerCamera" type="Camera3D" parent="PlayerBody/PlayerHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 fov = 90.0
-near = 0.27
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerBody/PlayerHead/PlayerCamera"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25378323)
@@ -173,4 +172,12 @@ replication_config = SubResource("SceneReplicationConfig_2bf54")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="PlayerBody"]
 _spawnable_scenes = PackedStringArray("uid://dc7sp1c0l5bqt", "uid://b3cvp3osl62qa")
-spawn_path = NodePath("..")
+spawn_path = NodePath("../WeaponContainer")
+
+[node name="WeaponContainer" type="Node3D" parent="PlayerBody"]
+
+[node name="Revolver" parent="PlayerBody/WeaponContainer" instance=ExtResource("3_4ofay")]
+
+[node name="AK47" parent="PlayerBody/WeaponContainer" instance=ExtResource("2_guygx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.063453294, 0)
+visible = false
