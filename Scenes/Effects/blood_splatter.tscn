@@ -1,8 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://cmwcnlttw68d6"]
 
-[ext_resource type="Texture2D" uid="uid://cdoi30m054vp3" path="res://Texures/Placeholder/red-blood-splatter-cut-out-stock-png.png" id="1_25m2e"]
+[ext_resource type="Texture2D" uid="uid://ybmel8hsiju5" path="res://Scenes/Effects/blood-png-1.png" id="1_25m2e"]
 
-[node name="BloodSplatter" type="Node3D"]
-
-[node name="Sprite3D" type="Sprite3D" parent="."]
-texture = ExtResource("1_25m2e")
+[node name="Decal" type="Decal"]
+texture_albedo = ExtResource("1_25m2e")
+modulate = Color(0.5251013, 0.5251013, 0.5251013, 1)

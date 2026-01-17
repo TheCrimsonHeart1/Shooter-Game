@@ -5548,6 +5548,7 @@ draw_pass_1 = ExtResource("3_vnqr4")
 transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -0.1391662, 1.4984834, 0.054034203)
 stream = ExtResource("6_xef5b")
 volume_db = -24.716
+max_db = -2.0
 
 [node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="humanoid (3)1"]
 transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, -0.0834775, 1.4448717, 0.4617161)

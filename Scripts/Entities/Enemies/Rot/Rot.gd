@@ -11,7 +11,8 @@ signal died(killer_node)
 @export var walk_speed := 2.2
 @export var walk_distance_per_cycle := 0.7
 @export var anim_player: AnimationPlayer
-const BLOOD_EFFECT_SCENE = preload("res://Scenes/Effects/blood_particles.tscn")
+const BLOOD_EFFECT_SCENE = preload("res://Scenes/Effects/blood_splatter.tscn")
+const BLOOD_EFFECT_SCENE2 = preload("res://Scenes/Effects/blood_particles.tscn")
 @export var is_animation_driven: bool = true
 var can_attack := true
 var gravity := 10.0
@@ -112,14 +113,58 @@ func take_damage(damage_amount: int, dealer_node: Node = null) -> void:
 		die.rpc()
 		died.emit(dealer_node)
 
+
 @rpc("authority", "call_local", "reliable")
 func play_hurt_effects(impact_position: Vector3):
 	$AudioStreamPlayer3D.play()
+	
+	# 1. Instantiate particles
+	var newparticles = BLOOD_EFFECT_SCENE2.instantiate()
+	
+	# 2. Add to the MAIN SCENE (not as a child of the enemy)
+	# This prevents particles from vanishing when the enemy dies
+	get_tree().current_scene.add_child(newparticles)
+	
+	# 3. Position them at the impact point
+	newparticles.global_position = impact_position
+	
+	# 4. Trigger emission
+	# Assuming your scene structure has a GPUParticles3D as the first child
+	var particle_node = newparticles.get_child(0) 
+	if particle_node is GPUParticles3D or particle_node is CPUParticles3D:
+		particle_node.emitting = true
+		
+		# 5. Auto-cleanup: Free the particles after they finish (e.g., 2 seconds)
+		get_tree().create_timer(2.0).timeout.connect(newparticles.queue_free)
 
-	var blood = BLOOD_EFFECT_SCENE.instantiate()
-	get_tree().current_scene.add_child(blood)
-	blood.global_position = impact_position
-	blood.get_child(0).restart()
+	var space_state = get_world_3d().direct_space_state
+
+	const SPLAT_COUNT := 6
+	const SPLAT_RADIUS := 1
+
+	for i in SPLAT_COUNT:
+		var offset = Vector3(
+			randf_range(-SPLAT_RADIUS, SPLAT_RADIUS),
+			0,
+			randf_range(-SPLAT_RADIUS, SPLAT_RADIUS)
+		)
+		await get_tree().create_timer(0.05).timeout
+
+		var ray_params = PhysicsRayQueryParameters3D.new()
+		ray_params.from = impact_position + offset + Vector3.UP * 0.5
+		ray_params.to = impact_position + offset + Vector3.DOWN * 2.5
+		ray_params.collide_with_areas = false
+		ray_params.collide_with_bodies = true
+
+		var result = space_state.intersect_ray(ray_params)
+
+		if result:
+			var decal: Decal = BLOOD_EFFECT_SCENE.instantiate()
+			get_tree().current_scene.add_child(decal)
+
+			# Position slightly above surface to avoid z-fighting
+			decal.global_position = result.position + result.normal * 0.01
+
 
 func attack_player(p: CharacterBody3D):
 	if p == null:

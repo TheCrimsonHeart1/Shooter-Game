@@ -4,6 +4,7 @@
 
 [resource]
 albedo_texture = ExtResource("1_uicje")
+metallic = 0.31
 heightmap_scale = 16.0
 uv1_scale = Vector3(-0.355, -0.355, -0.355)
 uv1_triplanar = true

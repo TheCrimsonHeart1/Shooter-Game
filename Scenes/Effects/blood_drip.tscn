@@ -1,0 +1,35 @@
+[gd_scene load_steps=7 format=3 uid="uid://k8p87jmm604t"]
+
+[ext_resource type="Texture2D" uid="uid://buko3ij2ebcst" path="res://Scenes/Effects/Blood-drop-isolated-on-transparent-background-PNG.png" id="1_few0p"]
+
+[sub_resource type="Curve" id="Curve_few0p"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_8bbds"]
+curve = SubResource("Curve_few0p")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8bbds"]
+scale_min = 0.5
+scale_max = 0.79999995
+scale_curve = SubResource("CurveTexture_8bbds")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_um5f3"]
+transparency = 1
+albedo_texture = ExtResource("1_few0p")
+billboard_mode = 1
+grow = true
+grow_amount = -10.637
+
+[sub_resource type="QuadMesh" id="QuadMesh_l0t37"]
+material = SubResource("StandardMaterial3D_um5f3")
+
+[node name="GPUParticles3D" type="GPUParticles3D"]
+amount = 4
+lifetime = 4.5
+speed_scale = 1.2
+visibility_aabb = AABB(0, 0, 0, 1, 1, 1)
+process_material = SubResource("ParticleProcessMaterial_8bbds")
+draw_pass_1 = SubResource("QuadMesh_l0t37")
+
+[node name="Blood Drip" type="Node3D" parent="."]

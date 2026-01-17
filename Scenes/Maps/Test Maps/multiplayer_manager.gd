@@ -27,9 +27,9 @@ func _ready() -> void:
 	connected_players.clear()
 
 func _on_host_pressed():
+	setup_upnp(1027) # Add this line before starting the network
 	start_network_as_server(32)
 	register_host_class()
-
 func _on_join_pressed():
 	var target_ip = ip_input.text
 	if target_ip == "":
@@ -155,7 +155,7 @@ func _on_multiplayer_pressed() -> void:
 	$CanvasLayer/Panel/Multiplayer.visible = false
 	$CanvasLayer/Panel/Back.visible = true
 	$CanvasLayer/Panel/ChooseClass.visible = false
-
+	$CanvasLayer/Panel/Quit.visible = false
 @rpc("any_peer", "call_local", "reliable")
 func set_player_class(class_index: int):
 	current_class = class_index
@@ -185,6 +185,7 @@ func _on_choose_class_pressed() -> void:
 	$CanvasLayer/Panel/Soldier.visible = true
 	$CanvasLayer/Panel/Back.visible = true
 	$CanvasLayer/Panel/ChooseClass.visible = false
+	$CanvasLayer/Panel/Quit.visible = false
 
 func _on_back_pressed() -> void:
 	$CanvasLayer/Panel/Singleplayer.visible = true
@@ -198,6 +199,7 @@ func _on_back_pressed() -> void:
 	$CanvasLayer/Panel/Label.visible = false
 	$CanvasLayer/Panel/Label2.visible = false
 	$CanvasLayer/Panel/Host.visible = false
+	$CanvasLayer/Panel/Quit.visible = true
 
 @rpc("any_peer", "reliable")
 func send_class_to_server(class_index: int):
@@ -221,3 +223,7 @@ func all_connected_players_have_class() -> bool:
 		if not player_classes.has(id):
 			return false
 	return true
+
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

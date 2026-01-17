@@ -221,6 +221,25 @@ theme_override_font_sizes/font_size = 68
 text = "Choose Class
 "
 
+[node name="Quit" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -229.0
+offset_top = 359.0
+offset_right = 224.0
+offset_bottom = 450.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Quit"
+
 [node name="Back" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
 layout_mode = 1
@@ -311,5 +330,6 @@ transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.29
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Bushwacker" to="MultiplayerManager" method="_on_bushwacker_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Multiplayer" to="MultiplayerManager" method="_on_multiplayer_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/ChooseClass" to="MultiplayerManager" method="_on_choose_class_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Quit" to="MultiplayerManager" method="_on_quit_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Back" to="MultiplayerManager" method="_on_back_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Join" to="MultiplayerManager" method="_on_join_pressed"]

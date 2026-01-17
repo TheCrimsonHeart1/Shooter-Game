@@ -46,9 +46,10 @@ func show_wave_text(wave_num: int):
 	if label:
 		label.text = "Wave %d" % wave_num
 		label.visible = true
+		$AudioStreamPlayer3D2.play()
 		await get_tree().create_timer(2.0).timeout
 		label.visible = false
-
+	
 @rpc("call_local", "unreliable")
 func update_timer_ui(text_val: String, is_visible: bool):
 	var label = $UI/WaveTimerLabel

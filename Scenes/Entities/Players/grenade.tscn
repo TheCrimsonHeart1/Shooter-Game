@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://c4y6emawi0ea5"]
+
+[ext_resource type="Script" uid="uid://f076bs233jfg" path="res://Scenes/Entities/Players/rigid_body_3d.gd" id="1_vyspg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vyspg"]
+albedo_color = Color(0, 0.2647672, 3.128499e-07, 1)
+metallic = 1.0
+roughness = 0.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_64jhf"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vyspg"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_rbc5c"]
+radius = 5.0
+
+[node name="Grenade" type="Node3D"]
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+script = ExtResource("1_vyspg")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_vyspg")
+mesh = SubResource("SphereMesh_64jhf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+shape = SubResource("SphereShape3D_vyspg")
+
+[node name="Area3D" type="Area3D" parent="RigidBody3D"]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D/Area3D"]
+shape = SubResource("SphereShape3D_rbc5c")
+
+[connection signal="body_entered" from="RigidBody3D/Area3D" to="RigidBody3D" method="_on_area_3d_body_entered"]

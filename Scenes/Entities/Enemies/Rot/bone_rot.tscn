@@ -8664,6 +8664,7 @@ collision_mask = 3
 script = ExtResource("1_ecevl")
 is_screaming = true
 health = 50
+attack_damage = 15
 walk_speed = 2.6
 walk_distance_per_cycle = 0.0
 anim_player = NodePath("running1/AnimationPlayer")

@@ -23,7 +23,7 @@ extends CharacterBody3D
 @onready var ak47_instance: Node3D = $WeaponContainer/AK47
 @onready var revolver_instance: Node3D = $WeaponContainer/Revolver
 
-
+const GRENADE_SCENE = preload("res://Scenes/Entities/Players/grenade.tscn")
 
 @onready var currencylabel: Label = $PlayerUI/CurrencyLabel
 @onready var playerCamera: Camera3D = $PlayerHead/PlayerCamera
@@ -51,7 +51,7 @@ var stamina_velocity = 0.0
 var camera_default_position: Vector3
 var mouse_locked = true
 var basePitch = 0.0
-
+var heals = 3
 var cameraRecoil := Vector2.ZERO
 var cameraRecoilTarget := 0.0
 var current_weapon_instance: Node3D = null
@@ -114,6 +114,7 @@ func _physics_process(delta):
 	handleMovement(delta)
 	applyGravity(delta)
 	handleJump()
+	handle_heal(delta)
 	if Input.is_action_just_pressed("switch"):
 		switch_gun(1 - current_weapon)
 	if is_on_floor() and velocity.length() > 0:
@@ -346,3 +347,53 @@ func _setup_weapon(weapon: Node3D):
 	weapon.ammoLabel = ammoLabel
 	weapon.visible = false
 	weapon.set_process(false)
+
+func handle_heal(delta):
+	if Input.is_action_just_pressed("heal") and heals >= 1:
+
+
+		var weapon = _get_weapon(current_weapon)
+		if weapon:
+			weapon.visible = false
+			weapon.set_process(false)
+
+		$heal0.visible = true
+		$heal0/AnimationPlayer.play("heal")
+		heals -= 1
+		
+		await get_tree().create_timer(0.5).timeout
+
+		var heal_amount := 25
+		var heal_duration := 1.0 # seconds
+		var heal_rate := heal_amount / heal_duration
+		var healed := 0.0
+
+		while healed < heal_amount:
+			var step = heal_rate * get_process_delta_time()
+			health += step
+			healed += step
+
+			health = min(health, 100)
+			healthBar.value = health
+
+			await get_tree().process_frame
+
+		$heal0.visible = false
+
+		if weapon:
+			weapon.visible = true
+			weapon.set_process(true)
+			weapon.update_ammo_ui()
+func handle_grenade(delta):
+	if Input.is_action_just_pressed("grenade"):
+		var grenade = GRENADE_SCENE.instantiate()
+		get_parent().add_child(grenade)
+
+		# Spawn slightly in front of the player
+		grenade.global_position = global_position + -global_transform.basis.z * 0.6
+
+		# Throw direction (forward)
+		var throw_dir = -global_transform.basis.z
+
+		# Apply force
+		grenade.get_child(0).apply_impulse(throw_dir * 12.0)

@@ -9,7 +9,7 @@ func _ready():
 	shop_ui.visible = false
 	$Area3D.body_entered.connect(_on_body_entered)
 	$Area3D.body_exited.connect(_on_body_exited)
-
+	$StaticBody3D/SHOP/AnimationPlayer.play("idle")
 func _input(event):
 	if player_inside and event.is_action_pressed(interact_action):
 		toggle_shop()

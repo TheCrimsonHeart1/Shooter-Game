@@ -1,8 +1,9 @@
-[gd_scene load_steps=15 format=4 uid="uid://dfgclpsxfoxwf"]
+[gd_scene load_steps=16 format=4 uid="uid://dfgclpsxfoxwf"]
 
 [ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_2372c"]
 [ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_xp50u"]
 [ext_resource type="Texture2D" uid="uid://vleqhjltkem7" path="res://Models/Enemies/FleshRo1t_9315.jpg" id="3_2372c"]
+[ext_resource type="AudioStream" uid="uid://cnc2gibigotev" path="res://Audio/scary-laugh-377526.mp3" id="3_xp50u"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_bcfhn"]
 properties/0/path = NodePath(".:global_position")
@@ -2626,6 +2627,7 @@ collision_mask = 3
 script = ExtResource("1_2372c")
 speed = 1.5
 health = 300
+attack_damage = 25
 attack_cooldown = 0.7
 walk_speed = 2.6
 walk_distance_per_cycle = 1.0
@@ -2638,6 +2640,11 @@ radius = 0.6
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("2_xp50u")
 volume_db = -6.992
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_xp50u")
+volume_db = -6.992
+autoplay = true
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_bcfhn")

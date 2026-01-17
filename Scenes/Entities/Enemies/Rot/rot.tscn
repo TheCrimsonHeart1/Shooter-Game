@@ -2624,6 +2624,7 @@ collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_icaku")
 health = 50
+attack_damage = 15
 anim_player = NodePath("FleshRo1t/AnimationPlayer")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
