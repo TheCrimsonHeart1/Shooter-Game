@@ -37,7 +37,7 @@ var health = 100
 var isinshop = false
 var has_switched_weapon = false
 
-var gunAmmo := {
+@export var gunAmmo := {
 	0: {"magazine": 30, "ammo": 120},
 	1: {"magazine": 6, "ammo": 36}
 }
@@ -123,14 +123,24 @@ func _physics_process(delta):
 		playerCamera.transform.origin = camera_default_position
 
 func _process(delta):
+	if not is_multiplayer_authority():
+		return
 	if health <= 0:
 		get_tree().change_scene_to_file("res://UI/Main Menu/main_menu.tscn")
 
 	if Input.is_action_just_pressed("pause") and not isinshop:
 		var pause_menu = $PauseMenu
-		pause_menu.visible = not pause_menu.visible
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if pause_menu.visible else Input.MOUSE_MODE_CAPTURED
-
+		pause_menu.visible = !pause_menu.visible
+		
+	
+		# SMART MOUSE CONTROL:
+		if pause_menu.visible or isinshop:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			
+	if isinshop:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	handle_controller_look(delta)
 
 	cameraRecoil.x = lerp(cameraRecoil.x, cameraRecoilTarget, recoilSpeedUp * delta)
@@ -181,6 +191,11 @@ func handleMovement(delta):
 			stamina += staminaRegenRate * delta
 			stamina = min(stamina, maxStamina)
 
+
+@rpc("any_peer", "call_local", "reliable")
+func sync_shop_state(state: bool):
+	isinshop = state
+	
 func applyGravity(delta):
 	if not is_on_floor():
 		accelerationRate = accelerationRateInAir
@@ -273,6 +288,41 @@ func take_damage(amount):
 		return
 	health -= amount
 	_sync_health_to_client.rpc_id(get_multiplayer_authority(), health)
+@rpc("any_peer", "reliable")
+func request_refill_ammo():
+	if not multiplayer.is_server():
+		return
+
+	var sender_id := multiplayer.get_remote_sender_id()
+	if sender_id == 0:
+		sender_id = multiplayer.get_unique_id()
+
+	if get_multiplayer_authority() != sender_id:
+		return # safety check
+
+	_refill_all_ammo_server()
+func _refill_all_ammo_server():
+	for weapon_id in gunAmmo.keys():
+		var weapon = _get_weapon(weapon_id)
+		if not weapon:
+			continue
+
+		gunAmmo[weapon_id]["magazine"] = weapon.magazineSize
+		gunAmmo[weapon_id]["ammo"] = weapon.maxAmmo
+
+	_sync_all_ammo_to_client.rpc_id(
+		get_multiplayer_authority(),
+		gunAmmo
+	)
+@rpc("any_peer", "call_local", "reliable")
+func _sync_all_ammo_to_client(new_ammo_data):
+	gunAmmo = new_ammo_data
+
+	var weapon = _get_weapon(current_weapon)
+	if weapon:
+		weapon.currentMagazine = gunAmmo[current_weapon]["magazine"]
+		weapon.currentAmmo = gunAmmo[current_weapon]["ammo"]
+		weapon.update_ammo_ui()
 
 @rpc("any_peer", "call_local", "reliable")
 func _sync_health_to_client(new_health):
@@ -282,38 +332,14 @@ func _sync_health_to_client(new_health):
 	if health <= 0:
 		get_tree().change_scene_to_file("res://UI/Main Menu/main_menu.tscn")
 
-func refill_all_ammo():
-	# Reset stored ammo data
-	gunAmmo[0] = {"magazine": 30, "ammo": 120}
-	gunAmmo[1] = {"magazine": 6, "ammo": 36}
 
-	# Refill AK47
-	if ak47_instance:
-		ak47_instance.currentMagazine = gunAmmo[0]["magazine"]
-		ak47_instance.currentAmmo = gunAmmo[0]["ammo"]
-		if ak47_instance.visible:
-			ak47_instance.update_ammo_ui()
+	# Apply to current weapon
+	var weapon = _get_weapon(current_weapon)
+	if weapon:
+		weapon.currentMagazine = gunAmmo[current_weapon]["magazine"]
+		weapon.currentAmmo = gunAmmo[current_weapon]["ammo"]
+		weapon.update_ammo_ui()
 
-	# Refill Revolver
-	if revolver_instance:
-		revolver_instance.currentMagazine = gunAmmo[1]["magazine"]
-		revolver_instance.currentAmmo = gunAmmo[1]["ammo"]
-		if revolver_instance.visible:
-			revolver_instance.update_ammo_ui()
-
-	# Sync currently equipped weapon to owning client
-	var slot := current_weapon
-	_sync_ammo_to_client.rpc_id(
-		get_multiplayer_authority(),
-		gunAmmo[slot]["magazine"],
-		gunAmmo[slot]["ammo"]
-	)
-@rpc("any_peer", "call_local", "reliable")
-func _sync_ammo_to_client(mag, ammo):
-	if current_weapon_instance:
-		current_weapon_instance.currentMagazine = mag
-		current_weapon_instance.currentAmmo = ammo
-		current_weapon_instance.update_ammo_ui()
 func _setup_weapon(weapon: Node3D):
 	weapon.player = self
 	weapon.playerCamera = playerCamera

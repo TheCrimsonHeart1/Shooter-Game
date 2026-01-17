@@ -16,18 +16,18 @@ func _input(event):
 
 func toggle_shop():
 	if player == null: return
-	shop_ui.visible = !shop_ui.visible
-	player.isinshop = shop_ui.visible
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if shop_ui.visible else Input.MOUSE_MODE_CAPTURED
-
-func close_shop():
-	# Use a local reference to ensure we can close even if 'player' is being cleared
-	if player:
-		player.isinshop = false
+	var new_state = !shop_ui.visible
+	shop_ui.visible = new_state
 	
+	# RPC call ensures all peers (and the local player) update the variable
+	player.sync_shop_state.rpc(new_state)
+	
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if new_state else Input.MOUSE_MODE_CAPTURED
+func close_shop():
+	if player:
+		player.sync_shop_state.rpc(false) # Sync the close
 	shop_ui.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
 func _on_body_exited(body):
 	# Check if the player exiting is the one we are tracking
 	if player and body == player:
@@ -43,7 +43,11 @@ func _on_body_entered(body):
 
 # --- UI BUTTONS ---
 
-
+func get_player_by_peer(peer_id: int) -> CharacterBody3D:
+	for p in get_tree().get_nodes_in_group("players"):
+		if p.get_multiplayer_authority() == peer_id:
+			return p
+	return null
 
 func _on_button_buy_ak47_pressed():
 	if player and player.current_currency >= 10:
@@ -53,15 +57,20 @@ func _on_button_buy_ak47_pressed():
 
 @rpc("any_peer", "call_local", "reliable")
 func request_ammo_refill():
-	if not multiplayer.is_server(): return
-	var sender_id = multiplayer.get_remote_sender_id()
-	# Find the player node named by Peer ID
-	var buyer = get_tree().root.find_child(str(sender_id), true, false)
-	
-	if buyer and buyer.get_child(0).current_currency >= 3:
-		buyer.get_child(0).update_currency(-3)
-		# Call the refill directly on the server's version of the buyer
-		buyer.get_child(0).refill_all_ammo()
+	if not multiplayer.is_server():
+		return
+
+	var sender_id := multiplayer.get_remote_sender_id()
+	if sender_id == 0:
+		sender_id = multiplayer.get_unique_id() # host fix
+
+	var buyer := get_player_by_peer(sender_id)
+	if buyer == null:
+		return
+
+	if buyer.current_currency >= 3:
+		buyer.update_currency(-3)
+		buyer.request_refill_ammo()
 
 @rpc("any_peer", "call_local", "reliable")
 func request_purchase_ak47():
@@ -85,4 +94,4 @@ func _on_button_2_pressed() -> void:
 
 
 func _on_button_4_pressed() -> void:
-	request_ammo_refill.rpc_id(1)
+	request_ammo_refill.rpc()

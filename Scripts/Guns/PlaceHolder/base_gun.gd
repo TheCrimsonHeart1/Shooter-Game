@@ -9,8 +9,9 @@ var playerCamera: Camera3D
 @onready var reticle: TextureRect
 var current_weapon: Node3D = null
 var headbobOffset: Vector3 = Vector3.ZERO
+@export var pellets: int = 8
+@export var shotgunSpreadAngle: float = 6.0
 
-# --- Gun settings ---
 @export var recoilamount: float = -0.5
 @export var gunOffset: Vector3 = Vector3(0.25, -0.25, -0.4)
 @export var adsOffset: Vector3 = Vector3(-0.2, 0.1, 0.15)
@@ -43,7 +44,7 @@ var recoilOffset: Vector3 = Vector3.ZERO
 @export var range: float = 100.0
 @export var spreadAngle: float = 1.0
 @export var bulletImpactScene: PackedScene
-
+@export var isShotgun: bool = false
 @export var magazineSize: int = 30
 @export var maxAmmo: int = 120
 @export var reloadTime: float = 1.5
@@ -156,7 +157,11 @@ func shoot():
 	recoilOffset.x += randf_range(recoilPitch * 0.7, recoilPitch)
 	recoilOffset.y += randf_range(-recoilYaw, recoilYaw)
 
-	shoot_ray()
+	if isShotgun:
+		shoot_shotgun()
+	else:
+		shoot_ray()
+
 
 
 @rpc("any_peer", "call_local", "unreliable") # Unreliable is better for fast sounds
@@ -287,3 +292,40 @@ func handle_headbob(delta):
 		# Smoothly return to zero when not moving
 		headbobTimer = 0
 		headbobOffset = headbobOffset.lerp(Vector3.ZERO, 10 * delta)
+func shoot_shotgun():
+	if not player or not playerCamera:
+		return
+	
+	player.apply_camera_recoil(recoilamount * 1.2, 0)
+
+	var forward = -playerCamera.global_transform.basis.z
+	var spread = deg_to_rad(shotgunSpreadAngle)
+
+	for i in pellets:
+		var dir = (Basis(Vector3.UP, randf_range(-spread, spread)) *
+				   Basis(Vector3.RIGHT, randf_range(-spread, spread))) * forward
+
+		var from = playerCamera.global_position
+		var to = from + dir.normalized() * range
+
+		var params = PhysicsRayQueryParameters3D.create(from, to)
+		params.exclude = [player.get_rid()]
+
+		var result = get_world_3d().direct_space_state.intersect_ray(params)
+		if result.is_empty():
+			continue
+
+		var target = result.collider
+
+		if target and target.has_method("take_damage") and not target.is_in_group("players"):
+			if multiplayer.is_server():
+				target.take_damage(damage, player)
+			else:
+				request_damage_on_server.rpc_id(
+					1,
+					target.get_path(),
+					damage,
+					player.get_path()
+				)
+
+		spawn_impact.rpc(result.position, result.normal)

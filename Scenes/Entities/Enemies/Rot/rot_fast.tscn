@@ -2619,10 +2619,17 @@ _data = {
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2372c"]
 height = 2.1323242
 
-[node name="CharacterBody3D" type="CharacterBody3D" groups=["enemy"]]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("anim_player") groups=["enemy"]]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
+collision_layer = 4
+collision_mask = 3
 script = ExtResource("1_2372c")
-health = 50
+speed = 1.5
+health = 300
 attack_cooldown = 0.7
+walk_speed = 2.6
+walk_distance_per_cycle = 1.0
+anim_player = NodePath("FleshRo1t/AnimationPlayer")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 avoidance_enabled = true

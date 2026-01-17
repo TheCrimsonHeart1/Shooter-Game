@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://vyeghb0o2qd1"]
+[gd_scene load_steps=14 format=3 uid="uid://vyeghb0o2qd1"]
 
 [ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_v04x6"]
+[ext_resource type="PackedScene" uid="uid://cxsqnorlf2aus" path="res://Scenes/Entities/Players/bushwacker.tscn" id="4_k0v0h"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="4_mqkp3"]
 [ext_resource type="Script" uid="uid://d1iey61mlik3f" path="res://Scenes/Maps/Test Maps/multiplayer_manager.gd" id="5_k0v0h"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="6_ajqx1"]
@@ -15,6 +16,7 @@ sky_material = SubResource("PanoramaSkyMaterial_jri5q")
 background_mode = 2
 sky = SubResource("Sky_ggkai")
 ambient_light_source = 3
+ambient_light_color = Color(0.9535573, 0, 0.52825814, 1)
 ambient_light_energy = 1.6
 reflected_light_source = 2
 ssr_enabled = true
@@ -85,6 +87,8 @@ near = 1.966
 transform = Transform3D(2.9802322e-08, 0, 1, 0, 1, 0, -1, 0, 2.9802322e-08, -21.119108, 1.3309274, 0)
 script = ExtResource("5_k0v0h")
 player_scene = ExtResource("6_ajqx1")
+bushwacker_scene = ExtResource("4_k0v0h")
+soldier_scene = ExtResource("6_ajqx1")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="MultiplayerManager"]
 
@@ -135,6 +139,48 @@ theme_override_constants/outline_size = 15
 theme_override_font_sizes/font_size = 68
 text = "Singleplayer"
 
+[node name="Soldier" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -203.0
+offset_top = -207.0
+offset_right = 203.0
+offset_bottom = -116.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Soldier
+"
+
+[node name="Bushwacker" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -203.0
+offset_top = -115.0
+offset_right = 203.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Bushwacker
+"
+
 [node name="Multiplayer" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 layout_mode = 1
 anchors_preset = 8
@@ -153,6 +199,42 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
 theme_override_font_sizes/font_size = 68
 text = "Multiplayer
+"
+
+[node name="ChooseClass" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -229.0
+offset_top = 239.0
+offset_right = 224.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Choose Class
+"
+
+[node name="Back" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -91.0
+offset_right = 453.0
+grow_vertical = 0
+theme = SubResource("Theme_7i25j")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 68
+text = "Back
 "
 
 [node name="Join" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
@@ -210,7 +292,8 @@ offset_right = 276.0
 offset_bottom = 43.0
 theme = SubResource("Theme_k0v0h")
 theme_override_font_sizes/font_size = 35
-text = "0/2"
+text = "0/2
+"
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="MultiplayerManager"]
 _spawnable_scenes = PackedStringArray("uid://ddl2gnobsrxta", "uid://b3cvp3osl62qa", "uid://dc7sp1c0l5bqt")
@@ -224,5 +307,9 @@ transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.29
 
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Host" to="MultiplayerManager" method="_on_host_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Singleplayer" to="MultiplayerManager" method="_on_singleplayer_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Soldier" to="MultiplayerManager" method="_on_soldier_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Bushwacker" to="MultiplayerManager" method="_on_bushwacker_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Multiplayer" to="MultiplayerManager" method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/ChooseClass" to="MultiplayerManager" method="_on_choose_class_pressed"]
+[connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Back" to="MultiplayerManager" method="_on_back_pressed"]
 [connection signal="pressed" from="MultiplayerManager/CanvasLayer/Panel/Join" to="MultiplayerManager" method="_on_join_pressed"]

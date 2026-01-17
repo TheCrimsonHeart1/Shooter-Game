@@ -78,6 +78,12 @@ visible = false
 material_override = SubResource("ShaderMaterial_n4e0b")
 mesh = SubResource("QuadMesh_2utkx")
 
+[node name="SpotLight3D" type="SpotLight3D" parent="PlayerBody/PlayerHead/PlayerCamera"]
+light_energy = 13.408
+shadow_enabled = true
+spot_range = 14.687
+spot_angle = 17.8
+
 [node name="PlayerUI" type="CanvasLayer" parent="PlayerBody"]
 
 [node name="StaminaBar" type="TextureProgressBar" parent="PlayerBody/PlayerUI"]
@@ -179,5 +185,3 @@ spawn_path = NodePath("../WeaponContainer")
 [node name="Revolver" parent="PlayerBody/WeaponContainer" instance=ExtResource("3_4ofay")]
 
 [node name="AK47" parent="PlayerBody/WeaponContainer" instance=ExtResource("2_guygx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.063453294, 0)
-visible = false

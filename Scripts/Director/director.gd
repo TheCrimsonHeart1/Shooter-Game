@@ -109,7 +109,7 @@ func start_wave_countdown() -> void:
 	while time_left > 0:
 		var display_text = "Next wave in %d" % int(ceil(time_left))
 		update_timer_ui.rpc(display_text, true)
-		
+
 		await get_tree().process_frame
 		time_left -= get_process_delta_time()
 

@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 signal died(killer_node)
-
+@export var is_screaming : bool
 @export var speed := 1.0
 @export var health := 100
 @export var attack_damage := 10
@@ -10,9 +10,9 @@ signal died(killer_node)
 @export var rotation_offset_degrees := 90
 @export var walk_speed := 2.2
 @export var walk_distance_per_cycle := 0.7
-
+@export var anim_player: AnimationPlayer
 const BLOOD_EFFECT_SCENE = preload("res://Scenes/Effects/blood_particles.tscn")
-
+@export var is_animation_driven: bool = true
 var can_attack := true
 var gravity := 10.0
 var ready_to_navigate := false
@@ -21,7 +21,8 @@ var players: Array[CharacterBody3D] = []
 var target_player: CharacterBody3D = null
 
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
-@onready var anim_player: AnimationPlayer = $FleshRo1t/AnimationPlayer
+
+
 
 var current_anim_state := "Idle":
 	set(value):
@@ -33,6 +34,8 @@ var current_anim_state := "Idle":
 func _ready():
 	anim_player.speed_scale = speed
 	call_deferred("actor_setup")
+	if is_screaming:
+		$AudioStreamPlayer3D2.play()
 
 func _physics_process(delta):
 	if not multiplayer.is_server():
@@ -56,17 +59,22 @@ func _physics_process(delta):
 	current_anim_state = "walk"
 	look_at_player(delta, target_player)
 
-	# 4️⃣ Move using in-place animation speed
+	# 4️⃣ Move toward target
 	var to_target := nav.get_next_path_position() - global_position
 	to_target.y = 0
+	var direction := to_target.normalized()  # Important to normalize!
 
-	var anim := anim_player.get_animation("walk")
-	var cycle_time := anim.length / anim_player.speed_scale
-
-	var move_speed := walk_distance_per_cycle / cycle_time
-
-	velocity.x = to_target.x * move_speed
-	velocity.z = to_target.z * move_speed
+	if is_animation_driven:
+		# Use animation-driven movement
+		var anim := anim_player.get_animation("walk")
+		var cycle_time := anim.length / anim_player.speed_scale
+		var move_speed := walk_distance_per_cycle / cycle_time
+		velocity.x = direction.x * move_speed
+		velocity.z = direction.z * move_speed
+	else:
+		# Use normal movement
+		velocity.x = direction.x * walk_speed
+		velocity.z = direction.z * walk_speed
 
 	# 5️⃣ Gravity
 	if not is_on_floor():
@@ -75,6 +83,20 @@ func _physics_process(delta):
 	move_and_slide()
 
 	# 6️⃣ Attack
+	if can_attack and global_position.distance_to(target_player.global_position) <= attack_range:
+		attack_player(target_player)
+
+
+
+	# 5️⃣ Gravity
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
+	move_and_slide()
+
+	if global_position.distance_to(target_player.global_position) <= 5:
+		if $AudioStreamPlayer3D4 != null:
+			$AudioStreamPlayer3D4.play()
 	if can_attack and global_position.distance_to(target_player.global_position) <= attack_range:
 		attack_player(target_player)
 
@@ -158,7 +180,10 @@ func die():
 
 	collision_layer = 0
 	collision_mask = 0
-
+	if $AudioStreamPlayer3D3 != null:
+		$AudioStreamPlayer3D3.stop()
+	if	$AudioStreamPlayer3D4 != null:
+		$AudioStreamPlayer3D4.stop()
 	current_anim_state = "die"
 	await get_tree().create_timer(3.0).timeout
 	queue_free()
