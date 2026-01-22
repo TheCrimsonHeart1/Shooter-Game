@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=4 uid="uid://n0csi7a5xsqm"]
+[gd_scene load_steps=57 format=4 uid="uid://n0csi7a5xsqm"]
 
 [ext_resource type="Script" uid="uid://cbaiqescdumgr" path="res://Scripts/Guns/PlaceHolder/base_gun.gd" id="1_in3gg"]
 [ext_resource type="PackedScene" uid="uid://cdy4igfpisxoa" path="res://Scenes/Guns/bullet_impact.tscn" id="2_34jgm"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://b3smbh1etjf3y" path="res://Models/Enemies/Placeholder/Guns/Doublebarrel11_Image_3.png" id="10_uaa18"]
 [ext_resource type="Texture2D" uid="uid://bjy7y64b0umgf" path="res://Models/Enemies/Placeholder/Guns/Doublebarrel11_Image_4.png" id="11_nlwot"]
 [ext_resource type="Texture2D" uid="uid://biu38ly7grfex" path="res://Models/Enemies/Placeholder/Guns/Doublebarrel11_Image_5.png" id="12_hbj0e"]
+[ext_resource type="Texture2D" uid="uid://x5kh76w788s4" path="res://UI/Player/Hitmarker-PNG.png" id="13_gwi2v"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xjqrd"]
 
@@ -14946,8 +14947,12 @@ alpha_curve = SubResource("CurveTexture_ww4dy")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.063453294, 0)
 script = ExtResource("1_in3gg")
 shotgunSpreadAngle = 4.0
+recoilamount = -5.0
 adsOffset = Vector3(-0.1, 0.1, 0.15)
-fireRate = 1.2
+headbobFrequency = 8.0
+headbobAmplitude = Vector3(0.001, 0.005, 0)
+recoilPitch = 25.0
+fireRate = 0.7
 bulletImpactScene = ExtResource("2_34jgm")
 isShotgun = true
 magazineSize = 2
@@ -17067,3 +17072,22 @@ pitch_scale = 0.64
 [node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="humanoid (3)1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07493694, 1.4118568, 0.6010777)
 stream = ExtResource("6_2vv3u")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -210.0
+offset_right = 210.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.045, 0.045)
+pivot_offset = Vector2(210, 210)
+texture = ExtResource("13_gwi2v")

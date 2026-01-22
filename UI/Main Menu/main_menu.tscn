@@ -1,10 +1,12 @@
-[gd_scene load_steps=14 format=3 uid="uid://vyeghb0o2qd1"]
+[gd_scene load_steps=22 format=3 uid="uid://vyeghb0o2qd1"]
 
 [ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_v04x6"]
 [ext_resource type="PackedScene" uid="uid://cxsqnorlf2aus" path="res://Scenes/Entities/Players/bushwacker.tscn" id="4_k0v0h"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="4_mqkp3"]
+[ext_resource type="Texture2D" uid="uid://7juhlb0ujo5i" path="res://UI/Main Menu/BIO-RAPTURE.png" id="5_ajqx1"]
 [ext_resource type="Script" uid="uid://d1iey61mlik3f" path="res://Scenes/Maps/Test Maps/multiplayer_manager.gd" id="5_k0v0h"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="6_ajqx1"]
+[ext_resource type="FontFile" uid="uid://htplsdo74urn" path="res://UI/times.ttf" id="8_7i25j"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_jri5q"]
 panorama = ExtResource("2_v04x6")
@@ -44,24 +46,123 @@ adjustment_brightness = 0.72
 adjustment_contrast = 1.14
 adjustment_saturation = 0.86
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mqkp3"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.11858138, 0.11858138, 0.11858138, 1)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_k0v0h"]
+texture = ExtResource("5_ajqx1")
+
+[sub_resource type="Theme" id="Theme_vq10u"]
+Panel/styles/panel = SubResource("StyleBoxTexture_k0v0h")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ajqx1"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[sub_resource type="Theme" id="Theme_vq10u"]
-Panel/styles/panel = SubResource("StyleBoxFlat_mqkp3")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7i25j"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.75)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qlwe4"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.225, 0.225, 0.225, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pfbba"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 15
+border_width_bottom = 20
+border_color = Color(0, 0, 0, 1)
+border_blend = true
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 5
+shadow_color = Color(0, 0, 0, 0.51900005)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2vg32"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
 [sub_resource type="Theme" id="Theme_7i25j"]
-default_font = ExtResource("4_mqkp3")
-default_font_size = 42
+default_font = ExtResource("8_7i25j")
+default_font_size = 24
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.875, 0.875, 0.875, 0.5)
+Button/colors/font_focus_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_disabled_color = Color(1, 1, 1, 0.4)
+Button/colors/icon_focus_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_color = Color(1, 1, 1, 1)
+Button/colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/icon_normal_color = Color(1, 1, 1, 1)
+Button/colors/icon_pressed_color = Color(1, 1, 1, 1)
+Button/constants/align_to_largest_stylebox = 0
+Button/constants/h_separation = 4
+Button/constants/icon_max_width = 0
+Button/constants/outline_size = 0
+Button/styles/disabled = SubResource("StyleBoxFlat_ajqx1")
+Button/styles/focus = SubResource("StyleBoxFlat_7i25j")
+Button/styles/hover = SubResource("StyleBoxFlat_qlwe4")
+Button/styles/normal = SubResource("StyleBoxFlat_pfbba")
+Button/styles/pressed = SubResource("StyleBoxFlat_2vg32")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rand3"]
+bg_color = Color(0.18000486, 0.1800049, 0.18000478, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 
 [sub_resource type="Theme" id="Theme_mqkp3"]
 default_font = ExtResource("4_mqkp3")
@@ -102,6 +203,7 @@ theme = SubResource("Theme_vq10u")
 
 [node name="Host" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -115,133 +217,153 @@ offset_bottom = 330.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
-theme_override_colors/font_color = Color(0.54999745, 1, 0.4957736, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_font_sizes/font_size = 60
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Host"
 
 [node name="Singleplayer" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -203.0
-offset_top = -14.0
-offset_right = 203.0
-offset_bottom = 77.0
+offset_left = -199.0
+offset_top = -61.0
+offset_right = 207.0
+offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Singleplayer"
 
 [node name="Soldier" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -203.0
-offset_top = -207.0
-offset_right = 203.0
-offset_bottom = -116.0
+offset_left = -199.0
+offset_top = -61.0
+offset_right = 207.0
+offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Soldier
 "
 
 [node name="Bushwacker" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -203.0
-offset_top = -115.0
-offset_right = 203.0
-offset_bottom = -24.0
+offset_left = -199.0
+offset_top = 92.0
+offset_right = 207.0
+offset_bottom = 183.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Bushwacker
 "
 
 [node name="Multiplayer" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -203.0
-offset_top = 121.0
-offset_right = 203.0
-offset_bottom = 212.0
+offset_left = -199.0
+offset_top = 92.0
+offset_right = 207.0
+offset_bottom = 183.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Multiplayer
 "
 
 [node name="ChooseClass" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -229.0
+offset_left = -199.0
 offset_top = 239.0
-offset_right = 224.0
-offset_bottom = 330.0
+offset_right = 207.0
+offset_bottom = 323.37085
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
-theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Choose Class
 "
 
 [node name="Quit" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -229.0
-offset_top = 359.0
-offset_right = 224.0
-offset_bottom = 450.0
+offset_left = -199.0
+offset_top = 391.0
+offset_right = 207.0
+offset_bottom = 482.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
-theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Quit"
 
 [node name="Back" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -252,12 +374,15 @@ grow_vertical = 0
 theme = SubResource("Theme_7i25j")
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Back
 "
 
 [node name="Join" type="Button" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -271,14 +396,17 @@ offset_bottom = 30.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_7i25j")
-theme_override_colors/font_color = Color(0.9022766, 0.91725326, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 15
-theme_override_font_sizes/font_size = 68
+theme_override_fonts/font = ExtResource("8_7i25j")
+theme_override_font_sizes/font_size = 55
+theme_override_styles/hover = SubResource("StyleBoxFlat_rand3")
 text = "Join   
 "
 
 [node name="IPAddressInput" type="LineEdit" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -296,6 +424,7 @@ placeholder_text = "Enter IP"
 
 [node name="Label" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
@@ -305,6 +434,7 @@ text = "Players:"
 
 [node name="Label2" type="Label" parent="MultiplayerManager/CanvasLayer/Panel"]
 visible = false
+z_index = 5
 layout_mode = 1
 offset_left = 143.0
 offset_right = 276.0

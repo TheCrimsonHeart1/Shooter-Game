@@ -6,17 +6,18 @@ extends Node3D
 @export var spawn_points: Array[Node3D] = []
 @export var time_between_waves := 30.0
 @onready var enemy_container = $EnemyContainer
-
+@export var hardened_rot_scene: PackedScene
 @export var fast_rot_scene: PackedScene  # Add this at the top
-
+@export var crawler_scene: PackedScene
 
 var fast_rot_percent: float = 0.1  # Chance for fast_rot, adjust as needed
-
+var hardened_rot_percent = 0.2
 var current_wave: int = 0
 var current_enemies: int = 0
 var enemies_per_wave: int = 10
 var wave_in_progress: bool = false
 var bone_rot_percent: float = 0.2
+var crawler_percent: float = 0.1
 
 func _ready() -> void:
 	if multiplayer.is_server():
@@ -71,10 +72,14 @@ func spawn_enemy() -> void:
 	var rand_val = randf()
 	var enemy_instance: Node3D
 
-	if rand_val <= fast_rot_percent:
+	if rand_val < fast_rot_percent:
 		enemy_instance = fast_rot_scene.instantiate()
-	elif rand_val <= fast_rot_percent + bone_rot_percent:
+	elif rand_val < fast_rot_percent + bone_rot_percent:
 		enemy_instance = bone_rot_scene.instantiate()
+	elif rand_val < fast_rot_percent + bone_rot_percent + hardened_rot_percent:
+		enemy_instance = hardened_rot_scene.instantiate()
+	elif rand_val < crawler_percent + fast_rot_percent + bone_rot_percent + hardened_rot_percent:
+		enemy_instance = crawler_scene.instantiate()
 	else:
 		enemy_instance = enemy_scene.instantiate()
 
@@ -95,6 +100,8 @@ func _on_enemy_died(killer_node: Node):
 	enemy_killed(killer_node)
 
 func enemy_killed(killing_player_node: Node) -> void:
+	if not multiplayer.is_server():
+		return
 	# Update ONLY the specific node instance that made the kill
 	if killing_player_node and killing_player_node.is_in_group("players"):
 		killing_player_node.update_currency(1)

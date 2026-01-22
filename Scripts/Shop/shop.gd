@@ -95,3 +95,53 @@ func _on_button_2_pressed() -> void:
 
 func _on_button_4_pressed() -> void:
 	request_ammo_refill.rpc()
+
+
+func _on_button_3_pressed() -> void:
+	if player and player.current_currency >= 10:
+		request_purchase_pistol_sight.rpc_id(1) # call server
+
+func get_player_pistol(player: CharacterBody3D) -> Node:
+	return player.get_node_or_null("WeaponContainer/Revolver")
+
+@rpc("authority", "call_local", "reliable")
+func update_pistol_sight_ui():
+	$ShopUI/Panel/ButtonBuySight.visible = false
+
+@rpc("any_peer", "call_local", "reliable")
+func request_purchase_pistol_sight():
+	if not multiplayer.is_server():
+		return
+
+	var sender_id := multiplayer.get_remote_sender_id()
+	if sender_id == 0:
+		sender_id = multiplayer.get_unique_id()
+
+	# Find the player
+	var buyer: CharacterBody3D = null
+	for p in get_tree().get_nodes_in_group("players"):
+		if p.get_multiplayer_authority() == sender_id:
+			buyer = p
+			break
+	if buyer == null:
+		return
+
+	if buyer.current_currency < 10:
+		return
+
+	# Deduct gold
+	buyer.update_currency(-10)
+
+	var pistol = buyer.get_pistol()
+	if pistol == null or pistol.hassight:
+		return
+
+	# Authority-safe: tell the owning player to enable the sight
+	pistol.rpc_id(buyer.get_multiplayer_authority(), "sync_sight", true)
+
+	# Hide the button for this client
+	update_shop_ui_pistol_sight.rpc_id(sender_id)
+
+@rpc("authority", "call_local", "reliable")
+func update_shop_ui_pistol_sight():
+	$ShopUI/Panel/Button3.visible = false

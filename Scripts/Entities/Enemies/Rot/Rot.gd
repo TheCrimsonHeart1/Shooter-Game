@@ -17,13 +17,16 @@ const BLOOD_EFFECT_SCENE2 = preload("res://Scenes/Effects/blood_particles.tscn")
 var can_attack := true
 var gravity := 10.0
 var ready_to_navigate := false
+@export var limb_nodes: Array[NodePath] = []
+
+var remaining_limbs: Array[Node3D] = []
 
 var players: Array[CharacterBody3D] = []
 var target_player: CharacterBody3D = null
 
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
 
-
+@export var skeleton : Skeleton3D
 
 var current_anim_state := "Idle":
 	set(value):
@@ -37,7 +40,7 @@ func _ready():
 	call_deferred("actor_setup")
 	if is_screaming:
 		$AudioStreamPlayer3D2.play()
-
+	
 func _physics_process(delta):
 	if not multiplayer.is_server():
 		return
@@ -108,7 +111,7 @@ func take_damage(damage_amount: int, dealer_node: Node = null) -> void:
 
 	health -= damage_amount
 	play_hurt_effects.rpc(global_position)
-
+	
 	if health <= 0:
 		die.rpc()
 		died.emit(dealer_node)
@@ -117,8 +120,6 @@ func take_damage(damage_amount: int, dealer_node: Node = null) -> void:
 @rpc("authority", "call_local", "reliable")
 func play_hurt_effects(impact_position: Vector3):
 	$AudioStreamPlayer3D.play()
-	
-	# 1. Instantiate particles
 	var newparticles = BLOOD_EFFECT_SCENE2.instantiate()
 	
 	# 2. Add to the MAIN SCENE (not as a child of the enemy)
@@ -222,13 +223,25 @@ func die():
 	ready_to_navigate = false
 	set_physics_process(false)
 	set_process(false)
-
 	collision_layer = 0
 	collision_mask = 0
+
+	# Stop audio
 	if $AudioStreamPlayer3D3 != null:
 		$AudioStreamPlayer3D3.stop()
-	if	$AudioStreamPlayer3D4 != null:
+	if $AudioStreamPlayer3D4 != null:
 		$AudioStreamPlayer3D4.stop()
+
+	# Stop movement animations
+	anim_player.stop()
+
+	# Play death animation
 	current_anim_state = "die"
-	await get_tree().create_timer(3.0).timeout
+	anim_player.play("die")
+
+	# Spawn blood effect
+	play_hurt_effects.rpc(global_position)
+
+	# Optional: remove the enemy after 10 seconds
+	await get_tree().create_timer(10.0).timeout
 	queue_free()

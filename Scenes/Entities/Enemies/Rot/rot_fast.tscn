@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://dfgclpsxfoxwf"]
+[gd_scene load_steps=18 format=4 uid="uid://dfgclpsxfoxwf"]
 
 [ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_2372c"]
 [ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_xp50u"]
@@ -171,6 +171,11 @@ bind/39/pose = Transform3D(-99.98086, 1.7577122, 0.6880583, 0.65221477, -2.18748
 bind/40/name = &"mixamorig_RightToe_End"
 bind/40/bone = -1
 bind/40/pose = Transform3D(-99.98085, 1.7577665, 0.6880595, 0.6522147, -2.1874995, 99.97265, 1.7721972, 99.96065, 2.1758435, 623.92456, -22.590178, -11.855432)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xp50u"]
+albedo_color = Color(18.892157, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_ljcw1"]
 
 [sub_resource type="Animation" id="Animation_uwm8d"]
 resource_name = "die"
@@ -2618,9 +2623,9 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2372c"]
-height = 2.1323242
+height = 2.2049408
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("anim_player") groups=["enemy"]]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("anim_player", "skeleton") groups=["enemy"]]
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 collision_layer = 4
 collision_mask = 3
@@ -2632,6 +2637,7 @@ attack_cooldown = 0.7
 walk_speed = 2.6
 walk_distance_per_cycle = 1.0
 anim_player = NodePath("FleshRo1t/AnimationPlayer")
+skeleton = NodePath("FleshRo1t/Armature_001/Skeleton3D")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 avoidance_enabled = true
@@ -2948,11 +2954,26 @@ bones/40/scale = Vector3(1, 1, 1)
 mesh = SubResource("ArrayMesh_8f7cu")
 skin = SubResource("Skin_o7eeb")
 
+[node name="BoneAttachment3D" type="BoneAttachment3D" parent="FleshRo1t/Armature_001/Skeleton3D"]
+transform = Transform3D(0.9879234, 0.13269842, 0.07999165, -0.13473108, 0.48075843, 0.8664402, 0.07651853, -0.8667538, 0.4928312, -4.2771034, 18.132652, -153.59708)
+bone_name = "mixamorig_Head"
+bone_idx = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FleshRo1t/Armature_001/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.75, -3.874302e-07, 0, 5.9604645e-08, 5.75, 0, 1.1920929e-07, 0, 5.75, 2.989337, 13.549103, 9.800465)
+material_override = SubResource("StandardMaterial3D_xp50u")
+mesh = SubResource("SphereMesh_ljcw1")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="FleshRo1t/Armature_001/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.75, -6.2584877e-07, 0, 5.9604645e-08, 5.75, 0, 1.1920929e-07, 0, 5.75, -3.128375, 12.989311, 9.765778)
+material_override = SubResource("StandardMaterial3D_xp50u")
+mesh = SubResource("SphereMesh_ljcw1")
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="FleshRo1t"]
 libraries = {
 &"": SubResource("AnimationLibrary_hvusi")
 }
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14009422, 0.06616211, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14009422, 0.105769746, 0)
 shape = SubResource("CapsuleShape3D_2372c")

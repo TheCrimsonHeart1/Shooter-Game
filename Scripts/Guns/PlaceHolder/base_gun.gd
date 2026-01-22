@@ -2,7 +2,7 @@ extends Node3D
 
 var player: CharacterBody3D
 var playerCamera: Camera3D
-
+@export var hassight = false
 @onready var shootAudio = get_child(0).get_node("AudioStreamPlayer3D")
 @onready var muzzleFlash: GPUParticles3D = get_child(0).get_node("GPUParticles3D")
 @onready var ammoLabel: Label
@@ -11,12 +11,17 @@ var current_weapon: Node3D = null
 var headbobOffset: Vector3 = Vector3.ZERO
 @export var pellets: int = 8
 @export var shotgunSpreadAngle: float = 6.0
-
+@export var fov_amount: float = 70
 @export var recoilamount: float = -0.5
 @export var gunOffset: Vector3 = Vector3(0.25, -0.25, -0.4)
 @export var adsOffset: Vector3 = Vector3(-0.2, 0.1, 0.15)
 @export var adsSpeed: float = 10.0
 @export var anim_tree: AnimationTree
+@export var fireKickback: float = 0.08
+@export var fireKickSide: float = 0.03
+@export var kickReturnSpeed: float = 18.0
+var kickOffset: Vector3 = Vector3.ZERO
+@export var fireShakeStrength: float = 0.002
 
 # --- Headbob ---
 @export var headbobFrequency: float = 4.0
@@ -33,12 +38,13 @@ var swayOffset: Vector3 = Vector3.ZERO
 var swayRotation: Vector3 = Vector3.ZERO
 var targetSwayOffset: Vector3 = Vector3.ZERO
 var targetSwayRotation: Vector3 = Vector3.ZERO
+var fireImpulse := 0.0
 
 @export var recoilPitch: float = 10.0
 @export var recoilYaw: float = 2.0
 @export var recoilRecoverySpeed: float = 10.0
 var recoilOffset: Vector3 = Vector3.ZERO
-
+@export var sight = Node3D
 @export var fireRate: float = 0.1
 @export var damage: float = 25.0
 @export var range: float = 100.0
@@ -48,7 +54,11 @@ var recoilOffset: Vector3 = Vector3.ZERO
 @export var magazineSize: int = 30
 @export var maxAmmo: int = 120
 @export var reloadTime: float = 1.5
+@export var idleSwayPosAmplitude: Vector3 = Vector3(0.002, 0.002, 0.0)
+@export var idleSwayRotAmplitude: Vector3 = Vector3(0.4, 0.3, 0.0)
+@export var idleSwaySpeed: float = 1.2
 
+var idleSwayTimer: float = 0.0
 var currentMagazine: int = 0
 var currentAmmo: int = 0
 var isReloading: bool = false
@@ -84,12 +94,12 @@ func _process(delta):
 		return
 
 	fireTimer -= delta
-
 	if isReloading:
 		reloadTimer -= delta
 		if reloadTimer <= 0.0:
 			finish_reload()
 
+	handle_idle_sway(delta)
 	handle_sway(delta)
 	handle_headbob(delta)  # <-- add this
 	handle_gun(delta)
@@ -121,16 +131,27 @@ func handle_sway(delta):
 func handle_gun(delta):
 	if player.isinshop or player.get_node("PauseMenu").visible:
 		return
+	fireImpulse = lerp(fireImpulse, 0.0, 20.0 * delta)
+	recoilOffset.x += fireImpulse * 0.6
 
 	isAiming = Input.is_action_pressed("aim")
 	if playerCamera:
-		var targetFOV = 70.0 if isAiming else 90.0
+		var targetFOV = fov_amount if isAiming else 90.0
 		playerCamera.fov = lerp(playerCamera.fov, targetFOV, 8.0 * delta)
 	var targetOffset = gunOffset + (adsOffset if isAiming else Vector3.ZERO)
 	currentOffset = currentOffset.lerp(targetOffset, adsSpeed * delta)
-	recoilOffset = recoilOffset.lerp(Vector3.ZERO, recoilRecoverySpeed * delta)
+	recoilOffset -= recoilOffset * recoilRecoverySpeed * delta
 
-	var offset_global = playerCamera.global_transform.basis * (currentOffset + swayOffset + headbobOffset)
+
+	kickOffset = kickOffset.lerp(Vector3.ZERO, kickReturnSpeed * delta)
+
+	var offset_global = playerCamera.global_transform.basis * (
+		currentOffset +
+		swayOffset +
+		headbobOffset +
+		kickOffset
+	)
+
 	global_position = playerCamera.global_position + offset_global
 
 	var camera_forward = -playerCamera.global_transform.basis.z
@@ -147,6 +168,12 @@ func shoot():
 	if currentMagazine <= 0:
 		start_reload()
 		return
+	swayOffset += Vector3(
+	randf_range(-fireShakeStrength, fireShakeStrength),
+	randf_range(-fireShakeStrength, fireShakeStrength),
+	0.0
+	)
+	fireImpulse = 1.0
 
 	currentMagazine -= 1
 	fireTimer = fireRate
@@ -154,8 +181,15 @@ func shoot():
 
 	play_shoot_effects.rpc()
 
-	recoilOffset.x += randf_range(recoilPitch * 0.7, recoilPitch)
+	recoilOffset.x += recoilPitch
 	recoilOffset.y += randf_range(-recoilYaw, recoilYaw)
+
+	# Extra horizontal snap
+	recoilOffset.z += randf_range(-0.6, 0.6)
+
+	# Positional kick (back + slight sideways)
+	kickOffset.z -= fireKickback
+	kickOffset.x += randf_range(-fireKickSide, fireKickSide)
 
 	if isShotgun:
 		shoot_shotgun()
@@ -164,14 +198,11 @@ func shoot():
 
 
 
-@rpc("any_peer", "call_local", "unreliable") # Unreliable is better for fast sounds
+@rpc("any_peer", "call_local", "unreliable") 
 func play_shoot_effects():
 	if not is_instance_valid(self) or not is_inside_tree():
 		return
-	
 	if shootAudio:
-		# If the sound is already playing, restart it for a crisp "click" 
-		# rather than stacking multiple instances of the same sound
 		if shootAudio.playing:
 			shootAudio.stop()
 		shootAudio.play()
@@ -206,10 +237,13 @@ func shoot_ray():
 		if multiplayer.is_server():
 			# Server applies damage directly, passing the local player node
 			target.take_damage(damage, player)
+			hitmarker()
+		
 		else:
 			# Client calls RPC with 3 arguments: Target, Damage, and Player Path
 			request_damage_on_server.rpc_id(1, target.get_path(), damage, player.get_path())
-
+			hitmarker()
+		
 	# Spawn impact locally for all
 	spawn_impact.rpc(result.position, result.normal)
 	
@@ -320,6 +354,7 @@ func shoot_shotgun():
 		if target and target.has_method("take_damage") and not target.is_in_group("players"):
 			if multiplayer.is_server():
 				target.take_damage(damage, player)
+				hitmarker()  # <-- Add this for the server
 			else:
 				request_damage_on_server.rpc_id(
 					1,
@@ -327,5 +362,49 @@ func shoot_shotgun():
 					damage,
 					player.get_path()
 				)
+				hitmarker()  # <-- Also call for client-side
 
 		spawn_impact.rpc(result.position, result.normal)
+@rpc("any_peer", "call_local", "reliable")
+func sync_sight(enabled: bool):
+	hassight = enabled
+	apply_sight()
+func apply_sight():
+	if sight:
+		sight.visible = hassight
+
+	# Optional gameplay bonus
+	if hassight:
+		fov_amount = 60
+		spreadAngle *= 0.6
+	else:
+		fov_amount = 70
+func handle_idle_sway(delta):
+	var horizontal_vel = Vector2(player.velocity.x, player.velocity.z).length()
+	
+	# Only idle sway when basically standing still
+	if horizontal_vel < 0.05 and player.is_on_floor():
+		idleSwayTimer += delta * idleSwaySpeed
+		
+		var ads_mul = adsSwayMultiplier if isAiming else 1.0
+		
+		targetSwayOffset += Vector3(
+			sin(idleSwayTimer * 0.8),
+			cos(idleSwayTimer * 1.1),
+			0.0
+		) * idleSwayPosAmplitude * ads_mul
+		
+		targetSwayRotation += Vector3(
+			sin(idleSwayTimer),
+			cos(idleSwayTimer * 0.9),
+			0.0
+		) * idleSwayRotAmplitude * ads_mul
+func hitmarker():
+	$CanvasLayer/TextureRect.visible = true
+	if $"humanoid (3)1/AudioStreamPlayer3D2" != null:
+		$"humanoid (3)1/AudioStreamPlayer3D2".play()
+	elif $"humanoid (4)Soldierprimary2/AudioStreamPlayer3D2" != null:
+		$"humanoid (4)Soldierprimary2/AudioStreamPlayer3D2".play()
+	await get_tree().create_timer(0.1).timeout
+	$CanvasLayer/TextureRect.visible = false
+	

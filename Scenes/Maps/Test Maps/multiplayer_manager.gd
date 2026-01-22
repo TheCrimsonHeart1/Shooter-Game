@@ -227,3 +227,7 @@ func all_connected_players_have_class() -> bool:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_terrain_map_pressed() -> void:
+	game_scene_path = ("res://Scenes/Maps/terrain.tscn")

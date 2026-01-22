@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4 uid="uid://dpl7x6t26tm0t"]
+[gd_scene load_steps=30 format=4 uid="uid://dpl7x6t26tm0t"]
 
 [ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_ecevl"]
 [ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_ipypx"]
@@ -172,6 +172,11 @@ bind/39/pose = Transform3D(-99.98086, 1.7577122, 0.6880583, 0.65221477, -2.18748
 bind/40/name = &"mixamorig_RightToe_End"
 bind/40/bone = -1
 bind/40/pose = Transform3D(-99.98085, 1.7577665, 0.6880595, 0.6522147, -2.1874995, 99.97265, 1.7721972, 99.96065, 2.1758435, 623.92456, -22.590178, -11.855432)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d00qq"]
+albedo_color = Color(18.892157, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_bx1t8"]
 
 [sub_resource type="Animation" id="Animation_pux5b"]
 resource_name = "1111"
@@ -8658,7 +8663,7 @@ _data = {
 &"walk": SubResource("Animation_3f884")
 }
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("anim_player") groups=["enemy"]]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("anim_player", "skeleton") groups=["enemy"]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_ecevl")
@@ -8669,6 +8674,7 @@ walk_speed = 2.6
 walk_distance_per_cycle = 0.0
 anim_player = NodePath("running1/AnimationPlayer")
 is_animation_driven = false
+skeleton = NodePath("running1/Armature_001/Skeleton3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11795378, 0.060302734, 0)
@@ -8992,6 +8998,21 @@ bones/40/scale = Vector3(1, 1, 1)
 [node name="Plane_002" type="MeshInstance3D" parent="running1/Armature_001/Skeleton3D"]
 mesh = SubResource("ArrayMesh_m4qog")
 skin = SubResource("Skin_f7vbu")
+
+[node name="BoneAttachment3D" type="BoneAttachment3D" parent="running1/Armature_001/Skeleton3D"]
+transform = Transform3D(0.9668752, -0.12968361, 0.21985145, -0.19805965, 0.16214952, 0.96668506, -0.16101207, -0.9782073, 0.1310933, -11.045053, 33.82525, -132.56685)
+bone_name = "mixamorig_Head"
+bone_idx = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="running1/Armature_001/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.75, -3.874302e-07, 0, 5.9604645e-08, 5.75, 0, 1.1920929e-07, 0, 5.75, 2.989337, 13.549103, 9.800465)
+material_override = SubResource("StandardMaterial3D_d00qq")
+mesh = SubResource("SphereMesh_bx1t8")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="running1/Armature_001/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.75, -6.2584877e-07, 0, 5.9604645e-08, 5.75, 0, 1.1920929e-07, 0, 5.75, -3.128375, 12.989311, 9.765778)
+material_override = SubResource("StandardMaterial3D_d00qq")
+mesh = SubResource("SphereMesh_bx1t8")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="running1"]
 libraries = {

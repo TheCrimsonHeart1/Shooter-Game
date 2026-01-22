@@ -1,0 +1,137 @@
+[gd_scene load_steps=17 format=3 uid="uid://3kdaoc4wxxd6"]
+
+[ext_resource type="Script" uid="uid://ckkdwopyhoc1e" path="res://Scripts/Director/director.gd" id="1_66nm4"]
+[ext_resource type="PackedScene" uid="uid://c763kk01mqd33" path="res://Scenes/Entities/Enemies/Rot/rot.tscn" id="2_bup8a"]
+[ext_resource type="PackedScene" uid="uid://dpl7x6t26tm0t" path="res://Scenes/Entities/Enemies/Rot/bone_rot.tscn" id="3_hjpyx"]
+[ext_resource type="PackedScene" uid="uid://bwcvrk5lueil6" path="res://Scenes/Entities/Enemies/Rot/HardenedRot.tscn" id="4_565g0"]
+[ext_resource type="PackedScene" uid="uid://dfgclpsxfoxwf" path="res://Scenes/Entities/Enemies/Rot/rot_fast.tscn" id="5_dgfii"]
+[ext_resource type="PackedScene" uid="uid://chat8tgedk7ji" path="res://Scenes/Entities/Enemies/Rot/enemy_spawn_point.tscn" id="7_balix"]
+[ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="8_a2yrc"]
+[ext_resource type="PackedScene" uid="uid://gkahjn6hgfgn" path="res://Scenes/Shop/shop.tscn" id="9_6lwy3"]
+[ext_resource type="AudioStream" uid="uid://ct2q0367x2dua" path="res://Audio/Soundtrack.mp3" id="10_pakf2"]
+[ext_resource type="AudioStream" uid="uid://dhkk2dt6ccgrx" path="res://Audio/scary-transition-401717.mp3" id="11_evrdt"]
+[ext_resource type="Texture2D" uid="uid://bphrb43jv7m82" path="res://Materials/Skybox/sky_21_2k.png" id="16_tow4c"]
+
+[sub_resource type="Theme" id="Theme_d3ijy"]
+default_font = ExtResource("8_a2yrc")
+default_font_size = 42
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_tow4c"]
+vertices = PackedVector3Array(27.918655, 28.055702, -168.11246, 27.918655, 27.805702, -167.61246, 28.418655, 28.055702, -167.61246, 28.418655, 28.305702, -168.11246, 14.668655, 10.805703, -62.362457, 15.418655, 10.555703, -62.112457, 15.418655, 10.555703, -62.612457, 15.918655, 15.305703, 57.387543, 15.918655, 15.305703, 58.137543, 16.668655, 15.305703, 58.137543, 16.418655, 14.805703, 57.137543, -36.581345, 16.555702, 59.137543, -36.581345, 16.305702, 59.887543, -35.831345, 16.805702, 59.637543)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1), PackedInt32Array(6, 5, 4), PackedInt32Array(7, 10, 8), PackedInt32Array(8, 10, 9), PackedInt32Array(13, 12, 11)]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_balix"]
+panorama = ExtResource("16_tow4c")
+energy_multiplier = 0.25
+
+[sub_resource type="Sky" id="Sky_a2yrc"]
+sky_material = SubResource("PanoramaSkyMaterial_balix")
+
+[sub_resource type="Environment" id="Environment_6lwy3"]
+background_mode = 2
+sky = SubResource("Sky_a2yrc")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 4
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+fog_density = 0.0847
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.04
+adjustment_enabled = true
+adjustment_brightness = 0.66
+adjustment_contrast = 1.07
+adjustment_saturation = 0.75
+
+[node name="Director" type="Node3D" node_paths=PackedStringArray("spawn_points")]
+script = ExtResource("1_66nm4")
+max_waves = 30
+enemy_scene = ExtResource("2_bup8a")
+bone_rot_scene = ExtResource("3_hjpyx")
+spawn_points = [NodePath("EnemySpawnPoint"), NodePath("EnemySpawnPoint2"), NodePath("EnemySpawnPoint3"), NodePath("EnemySpawnPoint4")]
+hardened_rot_scene = ExtResource("4_565g0")
+fast_rot_scene = ExtResource("5_dgfii")
+
+[node name="EnemySpawnPoint" parent="." instance=ExtResource("7_balix")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.77329314, -1.1423029, -19.151218)
+
+[node name="EnemySpawnPoint2" parent="." instance=ExtResource("7_balix")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.08822, -1.1800317, 3.4009228)
+
+[node name="EnemySpawnPoint3" parent="." instance=ExtResource("7_balix")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40.50395, -0.522923, 46.17889)
+
+[node name="EnemySpawnPoint4" parent="." instance=ExtResource("7_balix")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.056442, -1.0028653, -30.235115)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="WaveLabel" type="Label" parent="UI"]
+offset_left = 878.0
+offset_top = 3.0
+offset_right = 924.21
+offset_bottom = 26.915
+theme = SubResource("Theme_d3ijy")
+theme_override_font_sizes/font_size = 43
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="WaveTimerLabel" type="Label" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -23.10498
+offset_right = 23.10498
+offset_bottom = 53.0
+grow_horizontal = 2
+theme = SubResource("Theme_d3ijy")
+theme_override_font_sizes/font_size = 43
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Shop" parent="." instance=ExtResource("9_6lwy3")]
+transform = Transform3D(2.9802322e-08, 0, 1, 0, 1, 0, -1, 0, 2.9802322e-08, -16.539959, -1.4654793, -3.0671897)
+
+[node name="EnemyContainer" type="Node3D" parent="."]
+transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 6.2939847e-07, -1.3309274, 21.119108)
+
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://dpl7x6t26tm0t", "uid://c763kk01mqd33", "uid://dfgclpsxfoxwf", "uid://bwcvrk5lueil6")
+spawn_path = NodePath("../EnemyContainer")
+
+[node name="Spawn1" type="Node3D" parent="." groups=["spawn_points"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.89676, 3.2827377, 46.841026)
+
+[node name="Spawn2" type="Node3D" parent="." groups=["spawn_points"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.90277, 3.1144843, 49.646446)
+
+[node name="Spawn3" type="Node3D" parent="." groups=["spawn_points"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.90277, 3.1144843, 47.896675)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("10_pakf2")
+volume_db = 80.0
+max_db = 6.0
+autoplay = true
+max_distance = 4096.0
+
+[node name="AudioStreamPlayer3D2" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("11_evrdt")
+volume_db = 65.475
+max_db = -11.885
+max_distance = 4096.0
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40.732834, 0, 0)
+navigation_mesh = SubResource("NavigationMesh_tow4c")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_6lwy3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.8901491, 0.45566922, 0, -0.45566922, -0.8901491, 0, 38.639736, 0)
+shadow_enabled = true

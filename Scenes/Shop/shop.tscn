@@ -634,5 +634,14 @@ theme = SubResource("Theme_w8bjl")
 text = "Exit
 "
 
+[node name="Button3" type="Button" parent="ShopUI/Panel"]
+layout_mode = 1
+offset_right = 80.0
+offset_bottom = 60.0
+theme = SubResource("Theme_w8bjl")
+text = "Buy Pistol Sight
+"
+
 [connection signal="pressed" from="ShopUI/Panel/Button4" to="." method="_on_button_4_pressed"]
 [connection signal="pressed" from="ShopUI/Panel/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="ShopUI/Panel/Button3" to="." method="_on_button_3_pressed"]

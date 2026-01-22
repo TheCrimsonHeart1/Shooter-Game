@@ -1,4 +1,6 @@
 extends CharacterBody3D
+var action_locked := false
+var melee_hit_bodies := {}
 
 @export var movementSpeed: float = 4
 @export var defaultAccelerationRate: float = 7
@@ -18,7 +20,7 @@ extends CharacterBody3D
 @export var recoilSpeedUp: float = 10.0
 @export var recoilRecoverySpeed: float = 5.0
 @export var staminaRegenDelay: float = 0.4
-@export var controller_look_sensitivity := 120.0
+@export var controller_look_sensitivity := 250.0
 @export var controller_deadzone := 0.15
 @onready var ak47_instance: Node3D = $WeaponContainer/AK47
 @onready var revolver_instance: Node3D = $WeaponContainer/Revolver
@@ -115,6 +117,8 @@ func _physics_process(delta):
 	applyGravity(delta)
 	handleJump()
 	handle_heal(delta)
+	handle_grenade(delta)
+	handle_melee(delta)
 	if Input.is_action_just_pressed("switch"):
 		switch_gun(1 - current_weapon)
 	if is_on_floor() and velocity.length() > 0:
@@ -208,6 +212,7 @@ func applyGravity(delta):
 func handleJump():
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jumpForce
+		$AudioStreamPlayer3D.play()
 
 func handle_controller_look(delta):
 	var look_vec = Vector2(
@@ -231,6 +236,8 @@ func toggle_mouse_lock():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if mouse_locked else Input.MOUSE_MODE_VISIBLE
 
 func switch_gun(index: int):
+	if action_locked:
+		return
 	if not is_multiplayer_authority():
 		return
 	if current_weapon == index:
@@ -349,8 +356,11 @@ func _setup_weapon(weapon: Node3D):
 	weapon.set_process(false)
 
 func handle_heal(delta):
-	if Input.is_action_just_pressed("heal") and heals >= 1:
-
+	if action_locked:
+		return
+	if Input.is_action_just_pressed("heal") and heals > 0:
+		action_locked = true
+		heals -= 1
 
 		var weapon = _get_weapon(current_weapon)
 		if weapon:
@@ -358,24 +368,23 @@ func handle_heal(delta):
 			weapon.set_process(false)
 
 		$heal0.visible = true
-		$heal0/AnimationPlayer.play("heal")
-		heals -= 1
-		
-		await get_tree().create_timer(0.5).timeout
+		var anim = $heal0/AnimationPlayer
+		anim.play("heal")
 
+		await anim.animation_finished
+
+		# Smooth heal
 		var heal_amount := 25
-		var heal_duration := 1.0 # seconds
-		var heal_rate := heal_amount / heal_duration
+		var duration := 1.0
+		var rate := heal_amount / duration
 		var healed := 0.0
 
 		while healed < heal_amount:
-			var step = heal_rate * get_process_delta_time()
+			var step = rate * get_process_delta_time()
 			health += step
 			healed += step
-
 			health = min(health, 100)
 			healthBar.value = health
-
 			await get_tree().process_frame
 
 		$heal0.visible = false
@@ -384,6 +393,9 @@ func handle_heal(delta):
 			weapon.visible = true
 			weapon.set_process(true)
 			weapon.update_ammo_ui()
+
+		action_locked = false
+
 func handle_grenade(delta):
 	if Input.is_action_just_pressed("grenade"):
 		var grenade = GRENADE_SCENE.instantiate()
@@ -397,3 +409,72 @@ func handle_grenade(delta):
 
 		# Apply force
 		grenade.get_child(0).apply_impulse(throw_dir * 12.0)
+func get_pistol() -> Node3D:
+	return $WeaponContainer/Revolver  # assuming your pistol is the revolver
+
+func handle_melee(delta):
+	if action_locked:
+		return
+
+	if Input.is_action_just_pressed("melee"):
+		action_locked = true
+		melee_hit_bodies.clear()
+
+		var current_weapon_node = _get_weapon(current_weapon)
+		if current_weapon_node:
+			current_weapon_node.set_process(false)
+			current_weapon_node.visible = false  # hide gun
+
+		# Show knife
+		$knife1.visible = true
+		var anim := $knife1/AnimationPlayer
+		anim.play("slice")
+
+		# Enable hitbox
+		$Area3D.monitoring = true
+		var callable_hit = Callable(self, "_on_melee_body_entered")
+		if not $Area3D.is_connected("body_entered", callable_hit):
+			$Area3D.body_entered.connect(callable_hit)
+
+		# Wait for swing animation to finish
+		await anim.animation_finished
+
+		# Cleanup after swing
+		$Area3D.monitoring = false
+		melee_hit_bodies.clear()
+		$knife1.visible = false
+
+		# Restore gun AFTER knife is gone
+		if current_weapon_node:
+			current_weapon_node.visible = true
+			current_weapon_node.set_process(true)
+			current_weapon_node.update_ammo_ui()
+
+		action_locked = false
+
+@rpc("any_peer", "reliable")
+func request_melee_damage(enemy_path: NodePath, damage_to_deal: float, player_path: NodePath):
+	if not multiplayer.is_server():
+		return
+
+	var enemy = get_node_or_null(enemy_path)
+	var dealer = get_node_or_null(player_path)
+
+	if enemy and dealer and enemy.has_method("take_damage"):
+		enemy.take_damage(damage_to_deal, dealer)
+func _on_melee_body_entered(body):
+	if body in melee_hit_bodies:
+		return
+	melee_hit_bodies[body] = true
+
+	if body.has_method("take_damage") and not body.is_in_group("players"):
+		if multiplayer.is_server():
+			body.take_damage(100, self)
+		else:
+			request_melee_damage.rpc_id(
+				1,
+				body.get_path(),
+				100,
+				self.get_path()
+			)
+		print("Enemy Hit:", body.name)
