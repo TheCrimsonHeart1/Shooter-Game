@@ -5,6 +5,7 @@ var playerCamera: Camera3D
 @export var hassight = false
 @onready var shootAudio = get_child(0).get_node("AudioStreamPlayer3D")
 @onready var muzzleFlash: GPUParticles3D = get_child(0).get_node("GPUParticles3D")
+@onready var muzzleFlash2: GPUParticles3D = get_child(0).get_node("GPUParticles3D2")
 @onready var ammoLabel: Label
 @onready var reticle: TextureRect
 var current_weapon: Node3D = null
@@ -22,7 +23,11 @@ var headbobOffset: Vector3 = Vector3.ZERO
 @export var kickReturnSpeed: float = 18.0
 var kickOffset: Vector3 = Vector3.ZERO
 @export var fireShakeStrength: float = 0.002
-
+@export var sprintTiltAngle: float = 18.0   # degrees downward
+@export var sprintOffset: Vector3 = Vector3(0.0, -0.15, -0.2)
+@export var sprintTiltSpeed: float = 10.0
+var sprintTilt := 0.0
+@export var raycast : RayCast3D
 # --- Headbob ---
 @export var headbobFrequency: float = 4.0
 @export var headbobAmplitude: Vector3 = Vector3(0.001, 0.006, 0.0)
@@ -84,6 +89,7 @@ func _ready():
 		$"humanoid (3)1/AnimationPlayer".speed_scale = 1.5
 		$"humanoid (3)1/AnimationPlayer".play("reload")
 	elif $"humanoid (4)Soldierprimary2/AnimationPlayer":
+		$"humanoid (4)Soldierprimary2/AnimationPlayer".speed_scale = 1.5
 		$"humanoid (4)Soldierprimary2/AnimationPlayer".play("reload")
 		
 func _process(delta):
@@ -133,6 +139,20 @@ func handle_gun(delta):
 		return
 	fireImpulse = lerp(fireImpulse, 0.0, 20.0 * delta)
 	recoilOffset.x += fireImpulse * 0.6
+	# --- Sprint gun tilt ---
+	var isSprinting = player.isSprinting and not isAiming
+
+# Only apply sprint tilt if not shooting
+	var applySprintTilt = isSprinting and fireTimer <= 0.0
+
+	var targetTilt = sprintTiltAngle if applySprintTilt else 0.0
+	sprintTilt = lerp(sprintTilt, targetTilt, sprintTiltSpeed * delta)
+
+	var sprintPosOffset = sprintOffset if isSprinting else Vector3.ZERO
+	currentOffset = currentOffset.lerp(
+		gunOffset + (adsOffset if isAiming else Vector3.ZERO) + sprintPosOffset,
+		adsSpeed * delta
+	)
 
 	isAiming = Input.is_action_pressed("aim")
 	if playerCamera:
@@ -162,6 +182,9 @@ func handle_gun(delta):
 	forward = (Basis(playerCamera.global_transform.basis.x, deg_to_rad(recoilOffset.x + swayRotation.x)) * forward).normalized()
 	look_at(global_position + forward, camera_up)
 
+	# Apply sprint tilt **after** look_at
+	rotate_x(deg_to_rad(sprintTilt))
+
 func shoot():
 	if player.isinshop or player.get_node("PauseMenu").visible:
 		return
@@ -174,7 +197,6 @@ func shoot():
 	0.0
 	)
 	fireImpulse = 1.0
-
 	currentMagazine -= 1
 	fireTimer = fireRate
 	update_ammo_ui()
@@ -210,15 +232,17 @@ func play_shoot_effects():
 	if muzzleFlash:
 		muzzleFlash.restart()
 		muzzleFlash.emitting = true
+
 func shoot_ray():
 	if not player or not playerCamera:
 		return
 
 	player.apply_camera_recoil(recoilamount, 0)
-	
+
 	var forward = -playerCamera.global_transform.basis.z
 	var spread = deg_to_rad(spreadAngle)
-	var dir = (Basis(Vector3.UP, randf_range(-spread, spread)) * Basis(Vector3.RIGHT, randf_range(-spread, spread))) * forward
+	var dir = (Basis(Vector3.UP, randf_range(-spread, spread)) *
+			   Basis(Vector3.RIGHT, randf_range(-spread, spread))) * forward
 
 	var from = playerCamera.global_position
 	var to = from + dir.normalized() * range
@@ -230,22 +254,28 @@ func shoot_ray():
 	if result.is_empty():
 		return
 
-	var target = result.collider
-	
-	# --- Unified Damage Logic ---
-	if target and target.has_method("take_damage") and not target.is_in_group("players"):
+	var info = get_enemy_root_and_headshot(result.collider)
+	var target = info.enemy
+	var applied_damage = damage
+
+	if info.headshot and target.has_method("remove_head"):
+		target.remove_head()
+
+		if target.has_method("take_damage"):
+			# Deal damage equal to current health to ensure kill
+			target.take_damage(target.health, player)
+
+	if target:
 		if multiplayer.is_server():
-			# Server applies damage directly, passing the local player node
-			target.take_damage(damage, player)
+			target.take_damage(applied_damage, player)
 			hitmarker()
-		
 		else:
-			# Client calls RPC with 3 arguments: Target, Damage, and Player Path
-			request_damage_on_server.rpc_id(1, target.get_path(), damage, player.get_path())
+			request_damage_on_server.rpc_id(1, target.get_path(), applied_damage, player.get_path())
 			hitmarker()
-		
-	# Spawn impact locally for all
+
 	spawn_impact.rpc(result.position, result.normal)
+
+
 	
 
 @rpc("any_peer", "call_local", "reliable")
@@ -326,10 +356,11 @@ func handle_headbob(delta):
 		# Smoothly return to zero when not moving
 		headbobTimer = 0
 		headbobOffset = headbobOffset.lerp(Vector3.ZERO, 10 * delta)
+
 func shoot_shotgun():
 	if not player or not playerCamera:
 		return
-	
+
 	player.apply_camera_recoil(recoilamount * 1.2, 0)
 
 	var forward = -playerCamera.global_transform.basis.z
@@ -349,22 +380,33 @@ func shoot_shotgun():
 		if result.is_empty():
 			continue
 
-		var target = result.collider
+		var info = get_enemy_root_and_headshot(result.collider)
+		var target = info.enemy
+		var applied_damage = damage
 
-		if target and target.has_method("take_damage") and not target.is_in_group("players"):
+		if info.headshot and target.has_method("remove_head"):
+			# Remove head if possible
+			target.remove_head()
+	
+			if target.has_method("take_damage"):
+				target.take_damage(target.health, player)  # ensures kill on headshot
+
+		elif target and target.has_method("take_damage") and not target.is_in_group("players"):
+			# Normal body hit
+			if info.headshot:
+				applied_damage *= 2.0  # double damage on headshot
+
 			if multiplayer.is_server():
-				target.take_damage(damage, player)
-				hitmarker()  # <-- Add this for the server
+				target.take_damage(applied_damage, player)
+				hitmarker()
 			else:
-				request_damage_on_server.rpc_id(
-					1,
-					target.get_path(),
-					damage,
-					player.get_path()
-				)
-				hitmarker()  # <-- Also call for client-side
+				request_damage_on_server.rpc_id(1, target.get_path(), applied_damage, player.get_path())
+				hitmarker()
 
 		spawn_impact.rpc(result.position, result.normal)
+
+
+
 @rpc("any_peer", "call_local", "reliable")
 func sync_sight(enabled: bool):
 	hassight = enabled
@@ -383,7 +425,7 @@ func handle_idle_sway(delta):
 	var horizontal_vel = Vector2(player.velocity.x, player.velocity.z).length()
 	
 	# Only idle sway when basically standing still
-	if horizontal_vel < 0.05 and player.is_on_floor():
+	if horizontal_vel < 1000 and player.is_on_floor():
 		idleSwayTimer += delta * idleSwaySpeed
 		
 		var ads_mul = adsSwayMultiplier if isAiming else 1.0
@@ -408,3 +450,16 @@ func hitmarker():
 	await get_tree().create_timer(0.1).timeout
 	$CanvasLayer/TextureRect.visible = false
 	
+func get_enemy_root_and_headshot(collider: Node) -> Dictionary:
+	# Returns {"enemy": Node, "headshot": bool}
+	var node = collider
+	var headshot = false
+
+	while node:
+		if node.is_in_group("head"):
+			headshot = true
+		if node.has_method("take_damage") and not node.is_in_group("players"):
+			return {"enemy": node, "headshot": headshot}
+		node = node.get_parent()
+	
+	return {"enemy": null, "headshot": false}

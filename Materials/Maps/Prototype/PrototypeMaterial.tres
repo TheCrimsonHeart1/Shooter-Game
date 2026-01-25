@@ -1,9 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://c5pmgln4fm1t3"]
-
-[ext_resource type="Texture2D" uid="uid://b33nxhurrgv3m" path="res://Texures/Maps/Prototype/texture_01.png" id="1_uicje"]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://c5pmgln4fm1t3"]
 
 [resource]
-albedo_texture = ExtResource("1_uicje")
+cull_mode = 1
+albedo_color = Color(4.6165767, 0, 0, 1)
 metallic = 0.31
 heightmap_scale = 16.0
 uv1_scale = Vector3(-0.355, -0.355, -0.355)

@@ -1,25 +1,31 @@
-shader_type spatial;
+shader_type canvas_item;
 
-// Base material from Blender
-uniform sampler2D base_albedo : source_color;
-uniform sampler2D base_normal;
-uniform float base_roughness = 0.4;
-
-// Dirt overlay
-uniform sampler2D dirt_albedo : source_color;
-uniform sampler2D dirt_mask;
-uniform float dirt_strength = 0.5;
-uniform float dirt_scale = 3.0;
+// Stronger defaults
+uniform float radius:    hint_range(0.0, 1.0) = 0.22;  // where darkening starts (smaller = more encroachment)
+uniform float softness:  hint_range(0.0, 1.0) = 0.38;  // feather width toward center
+uniform float intensity: hint_range(0.0, 3.0) = 2.00;  // overall darkness
+uniform float contrast:  hint_range(0.5, 4.0) = 2.20;  // >1.0 sharpens falloff
+uniform vec4 vignette_color: source_color = vec4(0.0, 0.0, 0.0, 1.0);
 
 void fragment() {
-    vec2 dirt_uv = UV * dirt_scale;
+    vec2 uv = SCREEN_UV;
+    vec2 centered = uv - vec2(0.5);
 
-    vec3 base_color = texture(base_albedo, UV).rgb;
-    vec3 dirt_color = texture(dirt_albedo, dirt_uv).rgb;
-    float mask = texture(dirt_mask, dirt_uv).r;
+    // Edge-driven shape (0 at center, 1 at edges):
+    // Chebyshev distance = pushes from ALL edges uniformly
+    float edge_box = max(abs(centered.x) * 2.0, abs(centered.y) * 2.0);
 
-    float dirt = mask * dirt_strength;
+    // Blend a little radial in to avoid a "boxy" look (optional)
+    float edge_radial = length(centered) * 2.0; // 0 center -> ~1 corners
+    float shape = mix(edge_box, edge_radial, 0.25);
 
-    ALBEDO = mix(base_color, dirt_color, dirt);
-    ROUGHNESS = mix(base_roughness, 0.85, dirt);
+    // Darken from radius inward with feather = softness
+    float v = smoothstep(radius, radius + softness, shape);
+    v = pow(v, contrast);
+
+    vec4 overlay = vignette_color;
+    overlay.a = clamp(v * intensity, 0.0, 1.0);
+
+    // Output just the vignette color/alpha (use on a full-screen ColorRect)
+    COLOR = overlay;
 }

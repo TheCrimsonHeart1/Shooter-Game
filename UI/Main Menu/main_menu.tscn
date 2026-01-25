@@ -1,50 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://vyeghb0o2qd1"]
+[gd_scene load_steps=18 format=3 uid="uid://vyeghb0o2qd1"]
 
-[ext_resource type="Texture2D" uid="uid://dlhijvrlnidog" path="res://Texures/Maps/Prototype/sky_16_2k.png" id="2_v04x6"]
 [ext_resource type="PackedScene" uid="uid://cxsqnorlf2aus" path="res://Scenes/Entities/Players/bushwacker.tscn" id="4_k0v0h"]
 [ext_resource type="FontFile" uid="uid://d3eh8306icsls" path="res://UI/Inter-Italic-VariableFont_opsz,wght.ttf" id="4_mqkp3"]
 [ext_resource type="Texture2D" uid="uid://7juhlb0ujo5i" path="res://UI/Main Menu/BIO-RAPTURE.png" id="5_ajqx1"]
 [ext_resource type="Script" uid="uid://d1iey61mlik3f" path="res://Scenes/Maps/Test Maps/multiplayer_manager.gd" id="5_k0v0h"]
 [ext_resource type="PackedScene" uid="uid://bsybk1mgogfkb" path="res://Scenes/Entities/Players/BasePlayer/base_player.tscn" id="6_ajqx1"]
 [ext_resource type="FontFile" uid="uid://htplsdo74urn" path="res://UI/times.ttf" id="8_7i25j"]
-
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_jri5q"]
-panorama = ExtResource("2_v04x6")
-
-[sub_resource type="Sky" id="Sky_ggkai"]
-sky_material = SubResource("PanoramaSkyMaterial_jri5q")
-
-[sub_resource type="Environment" id="Environment_mqkp3"]
-background_mode = 2
-sky = SubResource("Sky_ggkai")
-ambient_light_source = 3
-ambient_light_color = Color(0.9535573, 0, 0.52825814, 1)
-ambient_light_energy = 1.6
-reflected_light_source = 2
-ssr_enabled = true
-ssao_enabled = true
-ssao_radius = 1.73
-ssao_intensity = 2.91
-ssao_detail = 0.65
-ssao_horizon = 0.11
-ssil_enabled = true
-ssil_intensity = 1.71
-sdfgi_enabled = true
-sdfgi_energy = 1.18
-glow_enabled = true
-glow_normalized = true
-glow_bloom = 0.5
-glow_hdr_threshold = 1.42
-glow_hdr_scale = 2.05
-glow_hdr_luminance_cap = 2.75
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.0112
-volumetric_fog_albedo = Color(0.7666196, 0.76661956, 0.76661956, 1)
-volumetric_fog_emission_energy = 24.8
-adjustment_enabled = true
-adjustment_brightness = 0.72
-adjustment_contrast = 1.14
-adjustment_saturation = 0.86
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_k0v0h"]
 texture = ExtResource("5_ajqx1")
@@ -171,14 +132,6 @@ default_font = ExtResource("4_mqkp3")
 default_font = ExtResource("4_mqkp3")
 
 [node name="Main Menu" type="Node3D"]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_mqkp3")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(0.47679272, 0.03428252, -0.878347, 0.45757928, -0.86285657, 0.21470976, -0.75052667, -0.5042854, -0.42709053, 0, 7, 0)
-shadow_enabled = true
-shadow_blur = 0.58
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.9234515, -0.14585091, 0.3549153, 0, 0.92494464, 0.380102, -0.38371518, -0.35100576, 0.8541415, 0.5982852, 4.8263807, 2.005267)

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://rwbs4vqhmqo7"]
+
+[ext_resource type="Texture2D" uid="uid://dw0t6v1c38qge" path="res://Scenes/Effects/smoke3.png" id="1_qo0dl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4v663"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.5010346, 0.5010346, 0.5010346, 0.546)
+albedo_texture = ExtResource("1_qo0dl")
+billboard_mode = 1
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_piiv2"]
+angle_min = 1.0728835e-05
+angle_max = 1.0728835e-05
+velocity_pivot = Vector3(0, 1.51, 0)
+spread = 16.216
+initial_velocity_max = 0.5
+angular_velocity_min = -1.6093254e-05
+angular_velocity_max = -1.6093254e-05
+orbit_velocity_min = -0.6399999
+orbit_velocity_max = 2.0000002
+radial_velocity_min = -2.2351742e-05
+radial_velocity_max = 0.49997765
+gravity = Vector3(0, 1, 0)
+linear_accel_min = -2.2351742e-06
+linear_accel_max = 0.99999774
+radial_accel_min = -2.2351742e-06
+radial_accel_max = 0.49999776
+scale_min = 5.0
+scale_max = 7.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_4qjyl"]
+size = Vector2(3, 3)
+
+[node name="Smoke" type="Node3D"]
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_4v663")
+amount = 20
+lifetime = 3.25
+process_material = SubResource("ParticleProcessMaterial_piiv2")
+draw_pass_1 = SubResource("QuadMesh_4qjyl")

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bl71p5qdkosk7"
+path="res://.godot/imported/audiomass-output (1).mp3-26cf42d63ee3d3b5ed7ef62c70384c79.mp3str"
+
+[deps]
+
+source_file="res://Audio/audiomass-output (1).mp3"
+dest_files=["res://.godot/imported/audiomass-output (1).mp3-26cf42d63ee3d3b5ed7ef62c70384c79.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4

@@ -41,6 +41,7 @@ alpha_curve = SubResource("CurveTexture_0vu3h")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_33uij"]
 transparency = 1
+albedo_color = Color(0.7919991, 0.79199916, 0.7919991, 1)
 albedo_texture = ExtResource("1_0vrni")
 billboard_mode = 1
 
@@ -54,8 +55,10 @@ material = SubResource("StandardMaterial3D_33uij")
 rotation_order = 0
 emitting = false
 amount = 10
-lifetime = 0.35000000000000003
+lifetime = 0.76
 one_shot = true
 explosiveness = 1.0
+randomness = 1.0
+fixed_fps = 60
 process_material = SubResource("ParticleProcessMaterial_80lnj")
 draw_pass_1 = SubResource("QuadMesh_85uw7")

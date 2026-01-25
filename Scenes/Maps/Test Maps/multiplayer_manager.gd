@@ -16,7 +16,7 @@ var player_classes := {}
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), -10)
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), -15)
 	spawner.spawn_function = _custom_spawn
 	spawner.spawn_path = level_container.get_path()
 	spawner.add_spawnable_scene(game_scene_path)
