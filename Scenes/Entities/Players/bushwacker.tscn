@@ -15286,14 +15286,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_sxdlv")
 }
 
-[node name="Area3D" type="Area3D" parent="PlayerBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.87514573)
-collision_mask = 7
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody/Area3D"]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0, 0)
-shape = SubResource("SphereShape3D_mhr7d")
-
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="PlayerBody"]
 stream = ExtResource("14_c4x5n")
 
@@ -15305,3 +15297,11 @@ volume_db = 20.0
 stream = ExtResource("32_bhbm3")
 volume_db = 15.0
 max_db = 6.0
+
+[node name="Area3D" type="Area3D" parent="PlayerBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.87514573)
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody/Area3D"]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 0, 0, 0)
+shape = SubResource("SphereShape3D_mhr7d")

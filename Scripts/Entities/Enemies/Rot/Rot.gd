@@ -16,7 +16,7 @@ signal died(killer_node)
 @export var attack_cooldown := 1.2
 @export var rotation_offset_degrees := 90
 @export var is_animation_driven: bool = true
-
+@export var meshenemy: MeshInstance3D
 const BLOOD_EFFECT_SCENE = preload("res://Scenes/Effects/blood_splatter.tscn")
 const BLOOD_EFFECT_SCENE2 = preload("res://Scenes/Effects/blood_particles.tscn")
 const LIMB_KEYWORDS := ["arm", "hand", "leg", "foot", "thigh", "calf", "upperarm", "lowerarm"]
@@ -124,7 +124,6 @@ func play_hurt_effects(impact_position: Vector3, headshot: bool):
 	
 	# 1. Instantiate
 	var blood = BLOOD_EFFECT_SCENE2.instantiate()
-	
 	# 2. Add to tree BEFORE setting properties
 	get_tree().current_scene.add_child(blood)
 	blood.global_position = impact_position

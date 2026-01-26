@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=4 uid="uid://dpl7x6t26tm0t"]
+[gd_scene load_steps=38 format=4 uid="uid://dpl7x6t26tm0t"]
 
 [ext_resource type="Script" uid="uid://cc0ph6tmh413l" path="res://Scripts/Entities/Enemies/Rot/Rot.gd" id="1_ecevl"]
 [ext_resource type="AudioStream" uid="uid://b0o8lf3x0btea" path="res://Audio/Guns/bulletimpact1-442717-[AudioTrimmer.com].mp3" id="2_ipypx"]
@@ -316,6 +316,11 @@ height = 67.310646
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hj8ef"]
 radius = 26.599577
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ca2go"]
+albedo_color = Color(18.892157, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dber6"]
 
 [sub_resource type="Animation" id="Animation_hj8ef"]
 resource_name = "crawl"
@@ -1792,7 +1797,7 @@ _data = {
 &"walk": SubResource("Animation_v1nt6")
 }
 
-[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("skele_sim", "skeleton", "anim_player") groups=["enemy"]]
+[node name="CharacterBody3D" type="CharacterBody3D" node_paths=PackedStringArray("skele_sim", "skeleton", "anim_player", "meshenemy") groups=["enemy"]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_ecevl")
@@ -1805,6 +1810,7 @@ walk_distance_per_cycle = 0.0
 anim_player = NodePath("rotrun/AnimationPlayer")
 attack_damage = 15
 is_animation_driven = false
+meshenemy = NodePath("rotrun/Armature/Skeleton3D/flesh_rot")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11795378, -0.025466919, 0)
@@ -3307,6 +3313,16 @@ collision_mask = 3
 [node name="CollisionShape3D" type="CollisionShape3D" parent="rotrun/Armature/Skeleton3D/BoneAttachment3D/StaticBody3D" groups=["head"]]
 transform = Transform3D(1, 3.6670826e-08, 1.4901161e-08, -1.7462298e-10, 0.99999964, 0, 7.450581e-09, 1.2014061e-07, 0.9999999, 0.86340714, 15.174522, 2.018488)
 shape = SubResource("SphereShape3D_hj8ef")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="rotrun/Armature/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.985, 1.5913974e-07, 5.9604645e-08, 8.8475645e-09, 5.984998, 7.450581e-09, 4.7683716e-07, 9.313226e-09, 5.985, 4.527316, 16.744392, 14.685007)
+material_override = SubResource("StandardMaterial3D_ca2go")
+mesh = SubResource("SphereMesh_dber6")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="rotrun/Armature/Skeleton3D/BoneAttachment3D"]
+transform = Transform3D(5.985, 3.6973506e-07, 5.9604645e-08, 1.0593794e-08, 5.984998, 7.450581e-09, 8.940697e-07, 2.0489097e-08, 5.985, -5.385895, 16.369743, 14.461874)
+material_override = SubResource("StandardMaterial3D_ca2go")
+mesh = SubResource("SphereMesh_dber6")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="rotrun"]
 libraries = {
