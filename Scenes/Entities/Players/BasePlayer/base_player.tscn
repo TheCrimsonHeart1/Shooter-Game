@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=4 uid="uid://bsybk1mgogfkb"]
+[gd_scene load_steps=63 format=4 uid="uid://bsybk1mgogfkb"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_evp4c"]
 [ext_resource type="Texture2D" uid="uid://cp666d11xkuj6" path="res://Texures/Placeholder/Guns/crosshair097.png" id="2_2utkx"]
@@ -22,6 +22,8 @@
 [ext_resource type="Texture2D" uid="uid://bc4w1cho0sg57" path="res://Texures/Placeholder/Guns/KnifeStab_Image_0.png" id="16_sbob1"]
 [ext_resource type="Texture2D" uid="uid://i6ehlaei3c8v" path="res://Texures/Placeholder/Guns/KnifeStab_Image_1.png" id="17_r3oae"]
 [ext_resource type="Texture2D" uid="uid://duy7gmo1lkngv" path="res://Texures/Placeholder/Guns/KnifeStab_Image_2.png" id="18_5s4ej"]
+[ext_resource type="AudioStream" uid="uid://c8b8pg63btppv" path="res://Audio/flesh-impact-266316.mp3" id="23_5s4ej"]
+[ext_resource type="AudioStream" uid="uid://7hd530gtpmdd" path="res://Audio/audiomass-output (3).mp3" id="24_jh17l"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
 
@@ -2636,3 +2638,12 @@ shape = SubResource("SphereShape3D_igqiv")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="PlayerBody"]
 stream = ExtResource("13_vn7ff")
+
+[node name="Heal" type="AudioStreamPlayer3D" parent="PlayerBody"]
+stream = ExtResource("23_5s4ej")
+volume_db = 20.0
+
+[node name="Swoosh" type="AudioStreamPlayer3D" parent="PlayerBody"]
+stream = ExtResource("24_jh17l")
+volume_db = 15.0
+max_db = 6.0

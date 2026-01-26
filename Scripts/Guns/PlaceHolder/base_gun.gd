@@ -21,6 +21,7 @@ var headbobOffset: Vector3 = Vector3.ZERO
 @export var fireKickback: float = 0.08
 @export var fireKickSide: float = 0.03
 @export var kickReturnSpeed: float = 18.0
+@export var enemyKnockback : float = 8.0
 var kickOffset: Vector3 = Vector3.ZERO
 @export var fireShakeStrength: float = 0.002
 @export var sprintTiltAngle: float = 18.0   # degrees downward
@@ -236,9 +237,10 @@ func play_shoot_effects():
 func shoot_ray():
 	if not player or not playerCamera:
 		return
-
+	
 	player.apply_camera_recoil(recoilamount, 0)
-
+	player.screenshake(0.04, 0.05)
+	
 	var forward = -playerCamera.global_transform.basis.z
 	var spread = deg_to_rad(spreadAngle)
 	var dir = (Basis(Vector3.UP, randf_range(-spread, spread)) *
@@ -254,41 +256,31 @@ func shoot_ray():
 	if result.is_empty():
 		return
 
+	# Determine if we hit an enemy and if it was a headshot
 	var info = get_enemy_root_and_headshot(result.collider)
 	var target = info.enemy
-	var applied_damage = damage
-
-	if info.headshot and target.has_method("remove_head"):
-		target.remove_head()
-
-		if target.has_method("take_damage"):
-			# Deal damage equal to current health to ensure kill
-			target.take_damage(target.health, player)
 
 	if target:
-		if multiplayer.is_server():
-			target.take_damage(applied_damage, player)
-			hitmarker()
-		else:
-			request_damage_on_server.rpc_id(1, target.get_path(), applied_damage, player.get_path())
-			hitmarker()
+		hitmarker() # Local visual feedback
+		# Send hit data to server. Server handles head removal/damage.
+		request_damage_on_server.rpc_id(1, target.get_path(), damage, player.get_path(), info.headshot)
 
 	spawn_impact.rpc(result.position, result.normal)
-
-
 	
 
+# Inside Weapon Script
+
 @rpc("any_peer", "call_local", "reliable")
-func request_damage_on_server(node_path: NodePath, damage_to_deal: float, player_path: NodePath):
+func request_damage_on_server(node_path: NodePath, damage_to_deal: float, player_path: NodePath, was_headshot: bool):
 	if not multiplayer.is_server():
 		return
 	
 	var target = get_node_or_null(node_path)
-	var killer = get_node_or_null(player_path) # The 3rd argument
 	
-	if target and target.has_method("take_damage") and not target.is_in_group("players"):
-		# Pass the killer node to the enemy's take_damage function
-		target.take_damage(damage_to_deal, killer) 
+	# Check if the target is valid and has the request_damage function
+	if target and target.has_method("request_damage"):
+		# Send exactly 4 arguments to match the updated enemy script
+		target.request_damage(int(damage_to_deal), was_headshot, player_path, null)
 @rpc("any_peer", "call_local", "reliable")
 func spawn_impact(pos: Vector3, normal: Vector3):
 	if bulletImpactScene:
@@ -362,10 +354,11 @@ func shoot_shotgun():
 		return
 
 	player.apply_camera_recoil(recoilamount * 1.2, 0)
-
+	player.screenshake(0.04, 0.05)
 	var forward = -playerCamera.global_transform.basis.z
 	var spread = deg_to_rad(shotgunSpreadAngle)
 
+	# We track hits per-pellet
 	for i in pellets:
 		var dir = (Basis(Vector3.UP, randf_range(-spread, spread)) *
 				   Basis(Vector3.RIGHT, randf_range(-spread, spread))) * forward
@@ -382,26 +375,11 @@ func shoot_shotgun():
 
 		var info = get_enemy_root_and_headshot(result.collider)
 		var target = info.enemy
-		var applied_damage = damage
 
-		if info.headshot and target.has_method("remove_head"):
-			# Remove head if possible
-			target.remove_head()
-	
-			if target.has_method("take_damage"):
-				target.take_damage(target.health, player)  # ensures kill on headshot
-
-		elif target and target.has_method("take_damage") and not target.is_in_group("players"):
-			# Normal body hit
-			if info.headshot:
-				applied_damage *= 2.0  # double damage on headshot
-
-			if multiplayer.is_server():
-				target.take_damage(applied_damage, player)
-				hitmarker()
-			else:
-				request_damage_on_server.rpc_id(1, target.get_path(), applied_damage, player.get_path())
-				hitmarker()
+		if target:
+			hitmarker()
+			# Send damage for each pellet
+			request_damage_on_server.rpc_id(1, target.get_path(), damage, player.get_path(), info.headshot)
 
 		spawn_impact.rpc(result.position, result.normal)
 
@@ -426,7 +404,9 @@ func handle_idle_sway(delta):
 	
 	# Only idle sway when basically standing still
 	if horizontal_vel < 1000 and player.is_on_floor():
-		idleSwayTimer += delta * idleSwaySpeed
+		var speed_multiplier := 2.0 if horizontal_vel > 0.1 else 1.0
+		idleSwayTimer += delta * idleSwaySpeed * speed_multiplier
+
 		
 		var ads_mul = adsSwayMultiplier if isAiming else 1.0
 		

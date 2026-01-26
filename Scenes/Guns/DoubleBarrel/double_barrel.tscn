@@ -1313,6 +1313,7 @@ shotgunSpreadAngle = 4.0
 recoilamount = -9.0
 adsOffset = Vector3(-0.09, 0.1, 0.15)
 adsSpeed = 5.0
+enemyKnockback = 14.0
 sprintTiltAngle = -18.0
 sprintOffset = Vector3(0, -0.15, 0.2)
 raycast = NodePath("humanoid (3)1/RayCast3D")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=101 format=4 uid="uid://cxsqnorlf2aus"]
+[gd_scene load_steps=103 format=4 uid="uid://cxsqnorlf2aus"]
 
 [ext_resource type="Script" uid="uid://bccdb6u4u2l8b" path="res://Scripts/Entities/Player/Movement/PlayerMovement.gd" id="1_1515c"]
 [ext_resource type="PackedScene" uid="uid://dc7sp1c0l5bqt" path="res://Scenes/Guns/BaseGun/base_gun.tscn" id="2_s86rb"]
@@ -11,7 +11,6 @@
 [ext_resource type="Texture2D" uid="uid://d0fc3jewekhhx" path="res://Texures/Placeholder/Guns/KnifeStab_Image_2_3.png" id="7_b6xi7"]
 [ext_resource type="PackedScene" uid="uid://6mxyhmbovc6q" path="res://UI/Main Menu/pause_menu.tscn" id="7_mhr7d"]
 [ext_resource type="Script" uid="uid://c6kbb07kh70an" path="res://Scenes/Entities/Players/BasePlayer/fps_counter.gd" id="7_x2w7d"]
-[ext_resource type="Shader" uid="uid://xckijyw1fyhc" path="res://Scenes/Maps/Test Maps/dirt.gdshader" id="8_3xjva"]
 [ext_resource type="Material" uid="uid://cy6eaf8epov73" path="res://Models/Player/hands.tres" id="8_kgkgf"]
 [ext_resource type="PackedScene" uid="uid://n0csi7a5xsqm" path="res://Scenes/Guns/DoubleBarrel/double_barrel.tscn" id="8_s86rb"]
 [ext_resource type="Texture2D" uid="uid://cb2s54i76vl3f" path="res://Models/Player/heal0_Image_0.png" id="9_76406"]
@@ -30,6 +29,8 @@
 [ext_resource type="Texture2D" uid="uid://c68vybl2oonv5" path="res://Models/Player/heal1_Image_0.png" id="15_ivivr"]
 [ext_resource type="Texture2D" uid="uid://cv2d57lt8su7j" path="res://Models/Player/heal1_Image_1.png" id="16_vb5hi"]
 [ext_resource type="Texture2D" uid="uid://bwf8pvoqewd1t" path="res://Models/Player/heal1_Image_2.png" id="17_cy20g"]
+[ext_resource type="AudioStream" uid="uid://c8b8pg63btppv" path="res://Audio/flesh-impact-266316.mp3" id="31_beguq"]
+[ext_resource type="AudioStream" uid="uid://7hd530gtpmdd" path="res://Audio/audiomass-output (3).mp3" id="32_bhbm3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2useb"]
 
@@ -1657,8 +1658,41 @@ default_font_size = 42
 default_font = ExtResource("5_mhr7d")
 default_font_size = 42
 
+[sub_resource type="Shader" id="Shader_beguq"]
+code = "shader_type canvas_item;
+
+// Stronger defaults
+uniform float radius:    hint_range(0.0, 1.0) = 0.22;  // where darkening starts (smaller = more encroachment)
+uniform float softness:  hint_range(0.0, 1.0) = 0.38;  // feather width toward center
+uniform float intensity: hint_range(0.0, 3.0) = 2.00;  // overall darkness
+uniform float contrast:  hint_range(0.5, 4.0) = 2.20;  // >1.0 sharpens falloff
+uniform vec4 vignette_color: source_color = vec4(0.0, 0.0, 0.0, 1.0);
+
+void fragment() {
+    vec2 uv = SCREEN_UV;
+    vec2 centered = uv - vec2(0.5);
+
+    // Edge-driven shape (0 at center, 1 at edges):
+    // Chebyshev distance = pushes from ALL edges uniformly
+    float edge_box = max(abs(centered.x) * 2.0, abs(centered.y) * 2.0);
+
+    // Blend a little radial in to avoid a \"boxy\" look (optional)
+    float edge_radial = length(centered) * 2.0; // 0 center -> ~1 corners
+    float shape = mix(edge_box, edge_radial, 0.25);
+
+    // Darken from radius inward with feather = softness
+    float v = smoothstep(radius, radius + softness, shape);
+    v = pow(v, contrast);
+
+    vec4 overlay = vignette_color;
+    overlay.a = clamp(v * intensity, 0.0, 1.0);
+
+    // Output just the vignette color/alpha (use on a full-screen ColorRect)
+    COLOR = overlay;
+}"
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l0pwo"]
-shader = ExtResource("8_3xjva")
+shader = SubResource("Shader_beguq")
 shader_parameter/radius = 0.830000039425
 shader_parameter/softness = 0.38
 shader_parameter/intensity = 2.0
@@ -11121,7 +11155,7 @@ theme = SubResource("Theme_n2bgi")
 theme_override_font_sizes/font_size = 34
 script = ExtResource("7_x2w7d")
 
-[node name="ColorRect" type="ColorRect" parent="PlayerBody/PlayerUI"]
+[node name="ColorRect2" type="ColorRect" parent="PlayerBody/PlayerUI"]
 z_index = -1
 material = SubResource("ShaderMaterial_l0pwo")
 anchors_preset = 15
@@ -15262,3 +15296,12 @@ shape = SubResource("SphereShape3D_mhr7d")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="PlayerBody"]
 stream = ExtResource("14_c4x5n")
+
+[node name="Heal" type="AudioStreamPlayer3D" parent="PlayerBody"]
+stream = ExtResource("31_beguq")
+volume_db = 20.0
+
+[node name="Swoosh" type="AudioStreamPlayer3D" parent="PlayerBody"]
+stream = ExtResource("32_bhbm3")
+volume_db = 15.0
+max_db = 6.0

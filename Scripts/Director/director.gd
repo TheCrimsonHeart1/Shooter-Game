@@ -30,7 +30,6 @@ var crawler_percent: float = 0.2
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		# Wait a moment for all clients to connect and spawn players
 		await get_tree().create_timer(1.0).timeout
 		start_next_wave()
 
@@ -43,7 +42,7 @@ func start_next_wave() -> void:
 	wave_in_progress = true
 	current_wave += 1
 
-	# Play combat music
+
 	play_combat_music.rpc()
 
 	var num_to_spawn: int = enemies_per_wave + (current_wave - 1) * 3

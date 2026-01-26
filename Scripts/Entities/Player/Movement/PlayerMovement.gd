@@ -1,7 +1,9 @@
 extends CharacterBody3D
 
 signal died(killer_node)
-
+var shake_offset := Vector3.ZERO
+var shake_strength := 0.0
+@onready var vignette = $PlayerUI/ColorRect2
 @export var movementSpeed: float = 4
 @export var defaultAccelerationRate: float = 7
 @export var mouseSensitivity: float = 0.15
@@ -121,9 +123,10 @@ func _physics_process(delta):
 		switch_gun(1 - current_weapon)
 	if is_on_floor() and velocity.length() > 0:
 		headbobTime += delta * velocity.length()
-		playerCamera.transform.origin = camera_default_position + headbob(headbobTime)
+		playerCamera.transform.origin = camera_default_position + headbob(headbobTime) + shake_offset
 	else:
-		playerCamera.transform.origin = camera_default_position
+		playerCamera.transform.origin = camera_default_position + shake_offset
+
 
 	
 func _process(delta):
@@ -275,6 +278,7 @@ func take_damage(amount):
 		return
 	health -= amount
 	_sync_health_to_client.rpc_id(get_multiplayer_authority(), health)
+	flash_vignette()
 
 @rpc("any_peer", "reliable")
 func request_refill_ammo():
@@ -343,6 +347,8 @@ func handle_heal(delta):
 		var anim = $PlayerHead/PlayerCamera/heal1/AnimationPlayer
 		anim.play("heal")
 		await anim.animation_finished
+		$Heal.play()
+		screenshake(0.05, 0.12)
 		var heal_amount := 25
 		var duration := 1.0
 		var rate := heal_amount / duration
@@ -429,3 +435,44 @@ func cancel_sprint():
 func start_heal_cooldown():
 	await get_tree().create_timer(heal_cooldown_time).timeout
 	heal_on_cooldown = false
+func screenshake(strength := 0.1, duration := 0.15):
+	shake_strength = strength
+
+	var tween := create_tween()
+	tween.tween_method(
+		func(_value):
+			shake_offset = Vector3(
+				randf_range(-1, 1),
+				randf_range(-1, 1),
+				0
+			) * shake_strength,
+		0.0,
+		1.0,
+		duration
+	)
+
+	tween.finished.connect(func():
+		shake_offset = Vector3.ZERO
+	)
+func flash_vignette():
+	var vignette = $PlayerUI/ColorRect2
+	if not vignette or not vignette.material: 
+		return
+	
+	var tween = create_tween()
+	
+	# We animate a 'weight' from 1.0 (100% Red) down to 0.0 (100% Black)
+	tween.tween_method(apply_vignette_color, 1.0, 0.0, 1.0).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+
+func apply_vignette_color(weight: float):
+	var vignette = $PlayerUI/ColorRect2
+	
+	# Colors to swap between
+	var red_hit = Color(1.0, 0.0, 0.0, 1.0) # Full Red
+	var black_idle = Color(0.0, 0.0, 0.0, 1.0) # Your original Black
+	
+	# Interpolate (blend) between Black and Red based on the weight
+	var final_color = black_idle.lerp(red_hit, weight)
+	
+	# Update the shader
+	vignette.material.set_shader_parameter("vignette_color", final_color)

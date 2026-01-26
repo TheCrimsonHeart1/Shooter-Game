@@ -1120,12 +1120,12 @@ bone_name = "joint26_024"
 bone_idx = 26
 
 [node name="Sketchfab_model" type="Node3D" parent="humanoid (3)1/Sketchfab_model_001/ba5392146a244cf78a36609b9238129d_fbx/RootNode/Hands/group_joints/Object_5/Skeleton3D/joint26_024"]
-transform = Transform3D(-3.418909, 6.4848256, -0.013600515, -0.7623224, -0.41715235, -7.2793612, -6.440063, -3.3932936, 0.86889195, -7.9714155, -5.699165, -3.7100127)
+transform = Transform3D(-3.4189088, 6.484825, -0.013600515, -0.7623224, -0.41715232, -7.2793612, -6.4400625, -3.3932934, 0.86889195, -7.9714155, -5.699165, -3.7100127)
 
 [node name="PythonlikeRevolver_obj_cleaner_materialmerger_gles" type="Node3D" parent="humanoid (3)1/Sketchfab_model_001/ba5392146a244cf78a36609b9238129d_fbx/RootNode/Hands/group_joints/Object_5/Skeleton3D/joint26_024/Sketchfab_model"]
 
 [node name="Object_2" type="MeshInstance3D" parent="humanoid (3)1/Sketchfab_model_001/ba5392146a244cf78a36609b9238129d_fbx/RootNode/Hands/group_joints/Object_5/Skeleton3D/joint26_024/Sketchfab_model/PythonlikeRevolver_obj_cleaner_materialmerger_gles"]
-transform = Transform3D(0.9999498, -0.0062073944, 0.0078349635, 0.008022586, 0.96595, -0.25860423, -0.005962924, 0.2586542, 0.9659515, 0, 0, 0)
+transform = Transform3D(0.99994975, -0.006207394, 0.0078349635, 0.008022586, 0.96594995, -0.25860423, -0.0059629236, 0.25865418, 0.9659515, 0, 0, 0)
 cast_shadow = 0
 mesh = SubResource("ArrayMesh_anhr0")
 skeleton = NodePath("")

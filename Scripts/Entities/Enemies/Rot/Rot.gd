@@ -1,348 +1,221 @@
 extends CharacterBody3D
 
 signal died(killer_node)
+
+@export var health := 100
 @export var is_screaming : bool
 @export var skele_sim : PhysicalBoneSimulator3D
+@export var skeleton : Skeleton3D
 @export var speed := 1.0
-@export var health := 100
+@export var walk_speed := 2.2
+@export var walk_distance_per_cycle := 0.7
+@export var anim_player: AnimationPlayer
+@export var knockback : int = 8
 @export var attack_damage := 10
 @export var attack_range := 2.0
 @export var attack_cooldown := 1.2
 @export var rotation_offset_degrees := 90
-@export var walk_speed := 2.2
-@export var walk_distance_per_cycle := 0.7
-@export var anim_player: AnimationPlayer
+@export var is_animation_driven: bool = true
+
 const BLOOD_EFFECT_SCENE = preload("res://Scenes/Effects/blood_splatter.tscn")
 const BLOOD_EFFECT_SCENE2 = preload("res://Scenes/Effects/blood_particles.tscn")
-@export var is_animation_driven: bool = true
+const LIMB_KEYWORDS := ["arm", "hand", "leg", "foot", "thigh", "calf", "upperarm", "lowerarm"]
+
+var is_dead := false
 var can_attack := true
 var gravity := 10.0
 var ready_to_navigate := false
-@export var limb_nodes: Array[NodePath] = []
-var is_dead := false
-var remaining_limbs: Array[Node3D] = []
-var players: Array[CharacterBody3D] = []
 var target_player: CharacterBody3D = null
-const LIMB_KEYWORDS := [
-	"arm",
-	"hand",
-	"leg",
-	"foot",
-	"thigh",
-	"calf",
-	"upperarm",
-	"lowerarm"
-]
+
 @onready var nav: NavigationAgent3D = $NavigationAgent3D
 
-@export var skeleton : Skeleton3D
-
+# This property should be in your MultiplayerSynchronizer
 var current_anim_state := "Idle":
 	set(value):
-		if current_anim_state == value:
-			return
+		if current_anim_state == value: return
 		current_anim_state = value
-		anim_player.play(value)
+		if anim_player: anim_player.play(value)
 
 func _ready():
-	anim_player.speed_scale = speed
+	if anim_player:
+		anim_player.speed_scale = speed
 	call_deferred("actor_setup")
-	if is_screaming:
+	if is_screaming and is_instance_valid($AudioStreamPlayer3D2):
 		$AudioStreamPlayer3D2.play()
-	
+
 func _physics_process(delta):
-	if not multiplayer.is_server():
-		return
-	if not ready_to_navigate:
+	# ONLY the server handles movement and AI logic
+	if not multiplayer.is_server() or is_dead or not ready_to_navigate:
 		return
 
-	# 1️⃣ Find target
 	target_player = find_closest_player()
 	if target_player == null:
 		current_anim_state = "Idle"
-		velocity.x = 0
-		velocity.z = 0
+		velocity.x = 0; velocity.z = 0
 		move_and_slide()
 		return
 
-	# 2️⃣ Set navigation target
 	nav.target_position = target_player.global_position
-
-	# 3️⃣ Rotate toward target
 	current_anim_state = "walk"
 	look_at_player(delta, target_player)
 
-	# 4️⃣ Move toward target
 	var to_target := nav.get_next_path_position() - global_position
 	to_target.y = 0
-	var direction := to_target.normalized()  # Important to normalize!
+	var direction := to_target.normalized()
 
-	if is_animation_driven:
-		# Use animation-driven movement
+	var move_speed = walk_speed
+	if is_animation_driven and anim_player.has_animation("walk"):
 		var anim := anim_player.get_animation("walk")
 		var cycle_time := anim.length / anim_player.speed_scale
-		var move_speed := walk_distance_per_cycle / cycle_time
-		velocity.x = direction.x * move_speed
-		velocity.z = direction.z * move_speed
-	else:
-		# Use normal movement
-		velocity.x = direction.x * walk_speed
-		velocity.z = direction.z * walk_speed
+		move_speed = walk_distance_per_cycle / cycle_time
 
-	# 5️⃣ Gravity
+	velocity.x = direction.x * move_speed
+	velocity.z = direction.z * move_speed
+
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
 	move_and_slide()
 
-	# 6️⃣ Attack
 	if can_attack and global_position.distance_to(target_player.global_position) <= attack_range:
 		attack_player(target_player)
 
+# --- COMBAT LOGIC ---
 
-
-	# 5️⃣ Gravity
-	if not is_on_floor():
-		velocity.y -= gravity * delta
-
-	move_and_slide()
-
-	if global_position.distance_to(target_player.global_position) <= 5:
-		if $AudioStreamPlayer3D4 != null:
-			$AudioStreamPlayer3D4.play()
-	if can_attack and global_position.distance_to(target_player.global_position) <= attack_range:
-		attack_player(target_player)
-
-
-func take_damage(damage_amount: int, dealer_node: Node = null) -> void:
+# Call this from the player's raycast script: 
+# if hit_node.has_method("request_damage"): hit_node.request_damage.rpc_id(1, amount, is_headshot)
+@rpc("any_peer", "call_local", "reliable")
+func request_damage(amount: int, was_headshot: bool = false, dealer_node_path: NodePath = "", _unused_extra = null):
+	# We only process damage on the server
 	if not multiplayer.is_server():
 		return
+	
+	# Optional: Get the player node if you need it for kill credit
+	var dealer = get_node_or_null(dealer_node_path)
+	
+	if was_headshot:
+		# Direct call to headshot logic
+		take_headshot(amount, dealer)
+	else:
+		# Direct call to body damage logic
+		take_damage(amount, dealer)
 
-	if is_dead:
-		return
-
+# Update these to match the "dealer" logic
+func take_damage(damage_amount: int, dealer_node: Node = null) -> void:
+	if is_dead: return
 	health -= damage_amount
-	play_hurt_effects.rpc(global_position)
-
+	play_hurt_effects.rpc(global_position, false)
 	if health <= 0:
-		die.rpc(dealer_node)
+		die.rpc(dealer_node.global_position if dealer_node else global_position)
 
-
+func take_headshot(damage_amount: int, dealer_node: Node = null) -> void:
+	if is_dead: return
+	health -= (damage_amount * 5) # Headshot multiplier
+	play_hurt_effects.rpc(global_position, true)
+	if health <= 0:
+		die.rpc(dealer_node.global_position if dealer_node else global_position)
 
 @rpc("authority", "call_local", "reliable")
-func play_hurt_effects(impact_position: Vector3):
-	remove_random_limb()
-
-	$AudioStreamPlayer3D.play()
-	var newparticles = BLOOD_EFFECT_SCENE2.instantiate()
+func play_hurt_effects(impact_position: Vector3, headshot: bool):
+	if headshot:
+		remove_head()
+	else:
+		remove_random_limb()
 	
-	# 2. Add to the MAIN SCENE (not as a child of the enemy)
-	# This prevents particles from vanishing when the enemy dies
-	get_tree().current_scene.add_child(newparticles)
+	# 1. Instantiate
+	var blood = BLOOD_EFFECT_SCENE2.instantiate()
 	
-	# 3. Position them at the impact point
-	newparticles.global_position = impact_position
+	# 2. Add to tree BEFORE setting properties
+	get_tree().current_scene.add_child(blood)
+	blood.global_position = impact_position
 	
-	# 4. Trigger emission
-	# Assuming your scene structure has a GPUParticles3D as the first child
-	var particle_node = newparticles.get_child(0) 
-	if particle_node is GPUParticles3D or particle_node is CPUParticles3D:
-		particle_node.emitting = true
-		
-		# 5. Auto-cleanup: Free the particles after they finish (e.g., 2 seconds)
-		get_tree().create_timer(2.0).timeout.connect(newparticles.queue_free)
+	# 3. Trigger Emission
+	# If your scene is just the particle node:
+	if blood is GPUParticles3D or blood is CPUParticles3D:
+		blood.emitting = true
+	else:
+		# If your scene has a script or child particles:
+		for child in blood.find_children("*", "GPUParticles3D"):
+			child.emitting = true
+		for child in blood.find_children("*", "CPUParticles3D"):
+			child.emitting = true
 
-	var space_state = get_world_3d().direct_space_state
+	# 4. Audio
+	if has_node("AudioStreamPlayer3D"):
+		$AudioStreamPlayer3D.play()
+	
+	# 5. Cleanup
+	get_tree().create_timer(2.0).timeout.connect(blood.queue_free)
 
-	const SPLAT_COUNT := 6
-	const SPLAT_RADIUS := 1
+@rpc("authority", "call_local", "reliable")
+func die(killer_position: Vector3):
+	if is_dead: return
+	is_dead = true
+	died.emit(self)
 
-	for i in SPLAT_COUNT:
-		var offset = Vector3(
-			randf_range(-SPLAT_RADIUS, SPLAT_RADIUS),
-			0,
-			randf_range(-SPLAT_RADIUS, SPLAT_RADIUS)
-		)
-		await get_tree().create_timer(0.05).timeout
+	ready_to_navigate = false
+	collision_layer = 0
+	collision_mask = 0
 
-		var ray_params = PhysicsRayQueryParameters3D.new()
-		ray_params.from = impact_position + offset + Vector3.UP * 0.5
-		ray_params.to = impact_position + offset + Vector3.DOWN * 2.5
-		ray_params.collide_with_areas = false
-		ray_params.collide_with_bodies = true
+	if skele_sim:
+		skele_sim.active = true
+		skele_sim.physical_bones_start_simulation()
+		for bone in skele_sim.get_children():
+			if bone is PhysicalBone3D:
+				var dir = (bone.global_position - killer_position).normalized()
+				bone.linear_velocity = dir * knockback
+	elif anim_player.has_animation("die"):
+		anim_player.play("die")
 
-		var result = space_state.intersect_ray(ray_params)
+	await get_tree().create_timer(5.0).timeout
+	if is_inside_tree() and multiplayer.is_server():
+		queue_free()
 
-		if result:
-			var decal: Decal = BLOOD_EFFECT_SCENE.instantiate()
-			get_tree().current_scene.add_child(decal)
+# --- HELPER FUNCTIONS ---
 
-			# Position slightly above surface to avoid z-fighting
-			decal.global_position = result.position + result.normal * 0.01
+func remove_head():
+	if not skeleton: return
+	for i in skeleton.get_bone_count():
+		if skeleton.get_bone_name(i).to_lower().contains("head"):
+			skeleton.set_bone_pose_scale(i, Vector3.ZERO)
+			break
 
+func remove_random_limb():
+	if not skeleton or randf() > 0.5: return
+	var valid_indices = []
+	for i in skeleton.get_bone_count():
+		var b_name = skeleton.get_bone_name(i).to_lower()
+		for kw in LIMB_KEYWORDS:
+			if b_name.contains(kw):
+				valid_indices.append(i)
+				break
+	if valid_indices.size() > 0:
+		skeleton.set_bone_pose_scale(valid_indices.pick_random(), Vector3.ZERO)
+
+func actor_setup():
+	await get_tree().physics_frame
+	ready_to_navigate = true
+
+func find_closest_player() -> CharacterBody3D:
+	var closest: CharacterBody3D = null
+	var closest_dist := INF
+	for p in get_tree().get_nodes_in_group("players"):
+		var d := global_position.distance_squared_to(p.global_position)
+		if d < closest_dist:
+			closest_dist = d
+			closest = p
+	return closest
 
 func attack_player(p: CharacterBody3D):
-	if p == null:
-		return
-
 	can_attack = false
-	p.take_damage(attack_damage)
+	if p.has_method("take_damage"):
+		p.take_damage(attack_damage)
 	await get_tree().create_timer(attack_cooldown).timeout
 	can_attack = true
 
 func look_at_player(delta, p: CharacterBody3D):
 	var dir := p.global_position - global_position
 	dir.y = 0
-
-	if dir.length() < 0.001:
-		return
-
+	if dir.length() < 0.01: return
 	var target_yaw := atan2(dir.x, dir.z)
-	var offset := deg_to_rad(rotation_offset_degrees)
-
-	rotation.y = lerp_angle(
-		rotation.y,
-		target_yaw + offset,
-		delta * 8.0
-	)
-
-
-func actor_setup():
-	await get_tree().physics_frame
-	players.clear()
-
-	for n in get_tree().get_nodes_in_group("players"):
-		if n is CharacterBody3D:
-			players.append(n)
-
-	ready_to_navigate = true
-
-func find_closest_player() -> CharacterBody3D:
-	var closest: CharacterBody3D = null
-	var closest_dist := INF
-
-	for p in get_tree().get_nodes_in_group("players"):
-		if not (p is CharacterBody3D):
-			continue
-		var d := global_position.distance_squared_to(p.global_position)
-		if d < closest_dist:
-			closest_dist = d
-			closest = p
-
-	return closest
-
-
-@rpc("authority", "call_local", "reliable")
-func die(killer):
-	if is_dead:
-		return
-	is_dead = true
-
-	died.emit(self, killer) # emit SELF, not killer
-
-	ready_to_navigate = false
-	set_physics_process(false)
-	set_process(false)
-	collision_layer = 0
-	collision_mask = 0
-
-	# Stop audio
-	if $AudioStreamPlayer3D3:
-		$AudioStreamPlayer3D3.stop()
-	if $AudioStreamPlayer3D4:
-		$AudioStreamPlayer3D4.stop()
-	anim_player.stop()
-	if !skele_sim:
-		current_anim_state = "die"
-		anim_player.play("die")
-	elif skele_sim:
-		skele_sim.active = true
-		skele_sim.physical_bones_start_simulation()
-		for bone in skele_sim.get_children():
-			if bone is PhysicalBone3D:
-				var dir = (bone.global_position - killer.global_position).normalized()
-				bone.linear_velocity = dir * 8.0
-
-
-				# Option 2 (better for ragdolls): impulse
-				# bone.apply_impulse(Vector3.ZERO, Vector3(0, 6, 0))
-
-	play_hurt_effects.rpc(global_position)
-
-	# Let death anim play
-	await get_tree().create_timer(5).timeout
-	queue_free()
-func remove_random_limb():
-	if not skele_sim:
-		return
-	if randf() > 0.5:
-		return
-
-	var limb_bones: Array[PhysicalBone3D] = []
-
-	for bone in skele_sim.get_children():
-		if bone is PhysicalBone3D:
-			var name := skeleton.get_bone_name(bone.get_bone_id()).to_lower()
-			for keyword in LIMB_KEYWORDS:
-				if name.contains(keyword):
-					limb_bones.append(bone)
-					break
-
-	if limb_bones.is_empty():
-		return
-
-	var chosen: PhysicalBone3D = limb_bones.pick_random()
-	var idx :int= chosen.get_bone_id()
-
-	# 🔴 BLOOD AT LIMB
-	var blood = BLOOD_EFFECT_SCENE2.instantiate()
-	get_tree().current_scene.add_child(blood)
-	blood.global_transform = chosen.global_transform
-
-	var p = blood.get_child(0)
-	if p is GPUParticles3D or p is CPUParticles3D:
-		p.emitting = true
-
-	get_tree().create_timer(2.0).timeout.connect(blood.queue_free)
-
-	# 🦴 REMOVE LIMB IMMEDIATELY
-	skeleton.set_bone_pose_scale(idx, Vector3(0.001, 0.001, 0.001))
-	chosen.collision_layer = 0
-	chosen.collision_mask = 0
-func remove_head():
-	if not skeleton:
-		return
-
-	# Find head bone
-	var head_bone_id := -1
-	for i in skeleton.get_bone_count():
-		var name := skeleton.get_bone_name(i).to_lower()
-		if name.contains("head"):
-			head_bone_id = i
-			break
-
-	if head_bone_id == -1:
-		return # no head found
-
-	# Disable bone in skeleton
-	skeleton.set_bone_pose_scale(head_bone_id, Vector3.ZERO)
-	# Disable collision if using PhysicalBone
-	if skele_sim:
-		for bone in skele_sim.get_children():
-			if bone is PhysicalBone3D and bone.get_bone_id() == head_bone_id:
-				bone.collision_layer = 0
-				bone.collision_mask = 0
-				# Detach bone so ragdoll doesn’t reset it
-				bone.get_parent().remove_child(bone)
-				get_parent().add_child(bone)
-				bone.global_transform = skeleton.global_transform * skeleton.get_bone_global_pose(head_bone_id)
-
-	# Spawn blood
-	var blood = BLOOD_EFFECT_SCENE2.instantiate()
-	get_tree().current_scene.add_child(blood)
-	var head_global := skeleton.global_transform * skeleton.get_bone_global_pose(head_bone_id)
-	blood.global_transform = head_global
-	var p = blood.get_child(0)
-	if p is GPUParticles3D or p is CPUParticles3D:
-		p.emitting = true
-	get_tree().create_timer(2.0).timeout.connect(blood.queue_free)
+	rotation.y = lerp_angle(rotation.y, target_yaw + deg_to_rad(rotation_offset_degrees), delta * 8.0)
